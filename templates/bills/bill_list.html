@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block title %}Bills – Vyra{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title"><i class="bi bi-receipt" style="color:var(--warning)"></i> Bills & Subscriptions</h1>
+        <p class="page-subtitle">Track and manage recurring bills</p>
+    </div>
+    <a href="{% url 'bill_create' %}" class="neu-btn neu-btn-warning"><i class="bi bi-plus-circle"></i> Add Bill</a>
+</div>
+
+{% if overdue %}
+<div class="neu-alert danger mb-3"><i class="bi bi-exclamation-triangle-fill"></i><strong>{{ overdue|length }} overdue bill(s)!</strong>&nbsp;Pay immediately to avoid late fees.</div>
+{% endif %}
+{% if upcoming %}
+<div class="neu-alert warning mb-3"><i class="bi bi-bell-fill"></i><strong>{{ upcoming|length }} bill(s)</strong>&nbsp;due within 7 days.</div>
+{% endif %}
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3"><div class="stat-card"><div class="stat-icon warning"><i class="bi bi-calendar-month"></i></div><div class="stat-label">Monthly Total</div><div class="stat-value warning">₹{{ total_monthly }}</div></div></div>
+    <div class="col-6 col-md-3"><div class="stat-card"><div class="stat-icon danger"><i class="bi bi-exclamation-circle"></i></div><div class="stat-label">Overdue</div><div class="stat-value danger">{{ overdue|length }}</div></div></div>
+    <div class="col-6 col-md-3"><div class="stat-card"><div class="stat-icon info"><i class="bi bi-clock"></i></div><div class="stat-label">Due This Week</div><div class="stat-value" style="color:var(--info);">{{ upcoming|length }}</div></div></div>
+</div>
+
+<div class="neu-table-wrap">
+    <table class="neu-table">
+        <thead><tr><th>Bill</th><th>Category</th><th>Amount</th><th>Due Date</th><th>Frequency</th><th>Status</th><th class="text-end">Actions</th></tr></thead>
+        <tbody>
+        {% for bill in bills %}
+        <tr>
+            <td class="fw-600">{{ bill.bill_name }}</td>
+            <td>{{ bill.get_category_display }}</td>
+            <td class="fw-600">₹{{ bill.amount }}</td>
+            <td style="color:var(--text-muted);">{{ bill.due_date }}</td>
+            <td>{{ bill.get_frequency_display }}</td>
+            <td>
+                {% if bill.is_paid %}<span class="neu-badge success">Paid</span>
+                {% elif bill.is_overdue %}<span class="neu-badge danger">Overdue</span>
+                {% else %}<span class="neu-badge warning">Pending</span>{% endif %}
+            </td>
+            <td>
+                <div class="d-flex gap-1 justify-content-end">
+                    <form method="post" action="{% url 'bill_toggle_paid' bill.pk %}" class="d-inline">{% csrf_token %}
+                        <button class="neu-btn-icon {% if bill.is_paid %}warning{% else %}success{% endif %}" type="submit"><i class="bi bi-{% if bill.is_paid %}x{% else %}check{% endif %}"></i></button>
+                    </form>
+                    <a href="{% url 'bill_update' bill.pk %}" class="neu-btn-icon"><i class="bi bi-pencil"></i></a>
+                    <form method="post" action="{% url 'bill_delete' bill.pk %}" class="d-inline">{% csrf_token %}<button class="neu-btn-icon danger" type="submit"><i class="bi bi-trash"></i></button></form>
+                </div>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" class="text-center py-4" style="color:var(--text-muted);">No bills added yet.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

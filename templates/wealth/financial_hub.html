@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+{% block title %}Financial Hub – Vyra{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title"><i class="bi bi-bank2" style="color:var(--primary)"></i> Financial Hub</h1>
+        <p class="page-subtitle">Complete wealth overview at a glance</p>
+    </div>
+    <a href="{% url 'ai_advisor' %}" class="neu-btn neu-btn-primary"><i class="bi bi-stars"></i> AI Advisor</a>
+</div>
+
+<!-- Health Score Banner -->
+<div class="neu-card mb-4" style="background:linear-gradient(135deg,#4f7ef7 0%,#8b6cf7 100%);border-radius:var(--radius-lg);">
+    <div class="neu-card-body d-flex justify-content-between align-items-center flex-wrap gap-3" style="padding:1.75rem 2rem;">
+        <div class="text-white">
+            <div style="font-size:0.8rem;font-weight:600;opacity:0.75;text-transform:uppercase;letter-spacing:0.08em;">Financial Health Score</div>
+            <h2 style="font-size:1.6rem;font-weight:700;margin:0.3rem 0;">Your finances are being analyzed</h2>
+            <p style="opacity:0.7;font-size:0.85rem;margin:0;">Based on assets, liabilities, savings & spending</p>
+        </div>
+        <div style="background:rgba(255,255,255,0.15);border-radius:var(--radius-lg);padding:1.25rem 2rem;text-align:center;backdrop-filter:blur(4px);">
+            <div style="font-size:3rem;font-weight:800;color:#fff;line-height:1;">{{ health_score }}</div>
+            <div style="font-size:0.8rem;color:rgba(255,255,255,0.8);">out of 100</div>
+            <div style="margin-top:0.4rem;">
+                <span style="background:rgba(255,255,255,0.25);border-radius:20px;padding:0.2rem 0.75rem;font-size:0.75rem;font-weight:700;color:#fff;">
+                    {% if health_score >= 80 %}Excellent{% elif health_score >= 60 %}Good{% else %}Needs Attention{% endif %}
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Net Worth + Key Stats -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon primary"><i class="bi bi-graph-up"></i></div>
+            <div class="stat-label">Net Worth</div>
+            <div class="stat-value {% if net_worth >= 0 %}success{% else %}danger{% endif %}">₹{{ net_worth|floatformat:0 }}</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon success"><i class="bi bi-safe2-fill"></i></div>
+            <div class="stat-label">Total Assets</div>
+            <div class="stat-value success">₹{{ total_assets|floatformat:0 }}</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon danger"><i class="bi bi-arrow-down-circle-fill"></i></div>
+            <div class="stat-label">Total Liabilities</div>
+            <div class="stat-value danger">₹{{ total_liabilities|floatformat:0 }}</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon info"><i class="bi bi-shield-fill-check"></i></div>
+            <div class="stat-label">Emergency Fund</div>
+            <div class="stat-value" style="color:var(--info);">₹{{ emergency_fund|floatformat:0 }}</div>
+        </div>
+    </div>
+</div>
+
+<!-- Asset Breakdown Row -->
+<div class="row g-3 mb-4">
+    {% for label, value, icon, color in asset_items %}
+    <div class="col-6 col-md-2">
+        <div class="stat-card text-center" style="padding:1rem;">
+            <div class="stat-icon {{ color }} mx-auto"><i class="bi bi-{{ icon }}"></i></div>
+            <div class="stat-label mt-1">{{ label }}</div>
+            <div class="fw-700" style="font-size:0.95rem;color:var(--text-primary);">₹{{ value|floatformat:0 }}</div>
+        </div>
+    </div>
+    {% empty %}
+    <!-- Fallback static breakdown -->
+    <div class="col-4 col-md-2"><div class="stat-card text-center" style="padding:1rem;"><div class="stat-icon primary mx-auto"><i class="bi bi-bank"></i></div><div class="stat-label mt-1">Bank</div><div class="fw-700" style="font-size:0.95rem;">₹{{ bank_balance|floatformat:0 }}</div></div></div>
+    <div class="col-4 col-md-2"><div class="stat-card text-center" style="padding:1rem;"><div class="stat-icon success mx-auto"><i class="bi bi-piggy-bank"></i></div><div class="stat-label mt-1">Savings</div><div class="fw-700" style="font-size:0.95rem;">₹{{ savings_balance|floatformat:0 }}</div></div></div>
+    <div class="col-4 col-md-2"><div class="stat-card text-center" style="padding:1rem;"><div class="stat-icon info mx-auto"><i class="bi bi-bar-chart"></i></div><div class="stat-label mt-1">Investments</div><div class="fw-700" style="font-size:0.95rem;">₹{{ investment_value|floatformat:0 }}</div></div></div>
+    <div class="col-4 col-md-2"><div class="stat-card text-center" style="padding:1rem;"><div class="stat-icon warning mx-auto"><i class="bi bi-graph-up-arrow"></i></div><div class="stat-label mt-1">Stocks</div><div class="fw-700" style="font-size:0.95rem;">₹{{ stock_value|floatformat:0 }}</div></div></div>
+    <div class="col-4 col-md-2"><div class="stat-card text-center" style="padding:1rem;"><div class="stat-icon danger mx-auto"><i class="bi bi-currency-bitcoin"></i></div><div class="stat-label mt-1">Crypto</div><div class="fw-700" style="font-size:0.95rem;">₹{{ crypto_value|floatformat:0 }}</div></div></div>
+    <div class="col-4 col-md-2"><div class="stat-card text-center" style="padding:1rem;"><div class="stat-icon purple mx-auto"><i class="bi bi-receipt-cutoff"></i></div><div class="stat-label mt-1">Monthly EMI</div><div class="fw-700" style="font-size:0.95rem;color:var(--danger);">₹{{ monthly_emi|floatformat:0 }}</div></div></div>
+    {% endfor %}
+</div>
+
+<!-- Chart + Upcoming Bills + Goals -->
+<div class="row g-3">
+    <div class="col-md-5">
+        <div class="chart-wrap h-100">
+            <div class="chart-title"><i class="bi bi-pie-chart-fill"></i> Asset Allocation</div>
+            <canvas id="assetChart" height="240"></canvas>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="neu-card h-100">
+            <div class="neu-card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="fw-600" style="color:var(--text-primary);font-size:0.85rem;"><i class="bi bi-receipt"></i> Upcoming Bills</span>
+                    <a href="{% url 'bill_list' %}" class="neu-btn neu-btn-sm">View All</a>
+                </div>
+                {% for bill in upcoming_bills %}
+                <div class="d-flex justify-content-between align-items-center py-2" style="border-bottom:1px solid rgba(190,200,213,0.3);">
+                    <div>
+                        <div class="fw-600" style="font-size:0.83rem;">{{ bill.bill_name }}</div>
+                        <div style="font-size:0.73rem;color:var(--text-muted);">{{ bill.due_date }}</div>
+                    </div>
+                    <span class="neu-badge {% if bill.is_overdue %}danger{% elif bill.days_until_due <= 3 %}warning{% else %}muted{% endif %}">₹{{ bill.amount }}</span>
+                </div>
+                {% empty %}
+                <div class="text-center py-3" style="color:var(--text-muted);font-size:0.83rem;">No upcoming bills</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="neu-card h-100">
+            <div class="neu-card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="fw-600" style="color:var(--text-primary);font-size:0.85rem;"><i class="bi bi-trophy"></i> Goals</span>
+                    <a href="{% url 'goal_list' %}" class="neu-btn neu-btn-sm">All</a>
+                </div>
+                {% for goal in goals %}
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span style="font-size:0.8rem;font-weight:600;">{{ goal.goal_name }}</span>
+                        <span style="font-size:0.75rem;color:var(--text-muted);">{{ goal.progress_percent }}%</span>
+                    </div>
+                    <div class="neu-progress">
+                        <div class="neu-progress-bar {% if goal.progress_percent >= 75 %}success{% elif goal.progress_percent >= 40 %}warning{% else %}danger{% endif %}" style="width: {{goal.progress_percent }}%;"></div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-center py-3" style="color:var(--text-muted);font-size:0.83rem;">No goals set</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ asset_labels|json_script:"assetLabels" }}
+{{ asset_data|json_script:"assetData" }}
+<script>
+Chart.defaults.font.family = 'Inter, sans-serif';
+Chart.defaults.color = '#7a8fa6';
+
+const labels = JSON.parse(document.getElementById('assetLabels').textContent);
+const data = JSON.parse(document.getElementById('assetData').textContent);
+
+new Chart(document.getElementById('assetChart').getContext('2d'), {
+    type: 'doughnut',
+    data: {
+        labels: labels,
+        datasets: [{ data: data,
+            backgroundColor: ['#4f7ef7','#3ecf8e','#3eb8d6','#f0a04b','#e05c6c'],
+            borderWidth: 0, hoverOffset: 8 }]
+    },
+    options: { cutout: '68%', plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, padding: 16 } } } }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,157 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Vyra{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block head %}{% endblock %}
+</head>
+<body>
+{% if user.is_authenticated %}
+<div class="app-wrapper">
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="neu-sidebar d-none d-md-flex flex-column">
+        <div class="sidebar-brand">
+            <div class="brand-icon"><i class="bi bi-wallet2"></i></div>
+            <a href="{% url 'dashboard' %}" class="brand-text">Vyra</a>
+        </div>
+
+        <nav class="flex-fill pt-1 pb-3">
+            <!-- Overview -->
+            <div class="sidebar-section">Overview</div>
+            <a href="{% url 'dashboard' %}" class="{% if request.path == '/' %}active{% endif %}"><i class="bi bi-speedometer2"></i> Dashboard</a>
+            <a href="{% url 'financial_hub' %}" class="{% if 'wealth' in request.path and 'networth' not in request.path and 'advisor' not in request.path %}active{% endif %}"><i class="bi bi-bank2"></i> Financial Hub</a>
+            <a href="{% url 'net_worth' %}" class="{% if 'networth' in request.path %}active{% endif %}"><i class="bi bi-graph-up-arrow"></i> Net Worth</a>
+
+            <hr class="sidebar-divider">
+
+            <!-- Expense Tracking -->
+            <div class="sidebar-section">Tracking</div>
+            <a href="{% url 'income_list' %}" class="{% if 'income' in request.path %}active{% endif %}"><i class="bi bi-arrow-down-circle"></i> Income</a>
+            <a href="{% url 'expense_list' %}" class="{% if 'expenses' in request.path and 'categories' not in request.path %}active{% endif %}"><i class="bi bi-arrow-up-circle"></i> Expenses</a>
+            <a href="{% url 'category_list' %}" class="{% if 'categories' in request.path %}active{% endif %}"><i class="bi bi-tags"></i> Categories</a>
+            <a href="{% url 'budget_list' %}" class="{% if 'budget' in request.path %}active{% endif %}"><i class="bi bi-pie-chart-fill"></i> Budget</a>
+            <a href="{% url 'bill_list' %}" class="{% if 'bills' in request.path %}active{% endif %}"><i class="bi bi-receipt"></i> Bills</a>
+
+            <hr class="sidebar-divider">
+
+            <!-- Banking -->
+            <div class="sidebar-section">Banking</div>
+            <a href="{% url 'bank_list' %}" class="{% if 'banking' in request.path %}active{% endif %}"><i class="bi bi-bank"></i> Bank & Cards</a>
+            <a href="{% url 'savings_list' %}" class="{% if 'savings' in request.path %}active{% endif %}"><i class="bi bi-piggy-bank"></i> Savings</a>
+            <a href="{% url 'loan_list' %}" class="{% if 'loans' in request.path %}active{% endif %}"><i class="bi bi-cash-stack"></i> Loans</a>
+
+            <hr class="sidebar-divider">
+
+            <!-- Investments -->
+            <div class="sidebar-section">Investments</div>
+            <a href="{% url 'investment_list' %}" class="{% if 'investments' in request.path %}active{% endif %}"><i class="bi bi-bar-chart"></i> Investments</a>
+            <a href="{% url 'stock_list' %}" class="{% if 'stocks' in request.path %}active{% endif %}"><i class="bi bi-graph-up-arrow"></i> Stocks</a>
+            <a href="{% url 'crypto_list' %}" class="{% if 'crypto' in request.path %}active{% endif %}"><i class="bi bi-currency-bitcoin"></i> Crypto</a>
+
+            <hr class="sidebar-divider">
+
+            <!-- Planning -->
+            <div class="sidebar-section">Planning</div>
+            <a href="{% url 'goal_list' %}" class="{% if 'goals' in request.path %}active{% endif %}"><i class="bi bi-trophy"></i> Goals</a>
+            <a href="{% url 'insurance_list' %}" class="{% if 'insurance' in request.path %}active{% endif %}"><i class="bi bi-shield-check"></i> Insurance</a>
+            <a href="{% url 'reports' %}" class="{% if 'reports' in request.path %}active{% endif %}"><i class="bi bi-bar-chart-line"></i> Reports</a>
+
+            <hr class="sidebar-divider">
+
+            <!-- AI -->
+            <div class="sidebar-section">AI</div>
+            <a href="{% url 'ai_advisor' %}" class="{% if 'advisor' in request.path %}active{% endif %}"><i class="bi bi-stars"></i> AI Advisor</a>
+            <a href="{% url 'insights' %}" class="{% if 'insights' in request.path %}active{% endif %}"><i class="bi bi-lightbulb"></i> Insights</a>
+
+            <hr class="sidebar-divider">
+            <form method="post" action="{% url 'logout' %}">{% csrf_token %}
+                <button type="submit" class="sidebar-logout"><i class="bi bi-box-arrow-right"></i> Logout</button>
+            </form>
+        </nav>
+    </aside>
+
+    <!-- ===== MAIN AREA ===== -->
+    <div class="main-area">
+        <!-- Topbar -->
+        <div class="topbar">
+            <!-- Mobile brand -->
+            <div class="d-md-none">
+                <span class="fw-700" style="color:var(--primary)"><i class="bi bi-wallet2"></i> Vyra</span>
+            </div>
+            <div class="topbar-title d-none d-md-block">
+                Welcome back, <strong>{{ user.get_full_name|default:user.username }}</strong>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <a href="{% url 'financial_hub' %}" class="neu-btn neu-btn-sm d-none d-md-inline-flex"><i class="bi bi-bank2"></i> Financial Hub</a>
+                <a href="{% url 'ai_advisor' %}" class="neu-btn neu-btn-primary neu-btn-sm"><i class="bi bi-stars"></i> AI Advisor</a>
+                <!-- Mobile menu toggle -->
+                <button class="neu-btn-icon d-md-none" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar"><i class="bi bi-list fs-5"></i></button>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        <div class="px-3 pt-2">
+        {% if messages %}{% for message in messages %}
+        <div class="neu-alert {% if 'error' in message.tags %}danger{% elif 'success' in message.tags %}success{% elif 'warning' in message.tags %}warning{% else %}info{% endif %}">
+            <i class="bi bi-{% if 'error' in message.tags %}x-circle{% elif 'success' in message.tags %}check-circle{% else %}info-circle{% endif %}"></i>
+            {{ message }}
+        </div>
+        {% endfor %}{% endif %}
+        </div>
+
+        <!-- Page Content -->
+        <div class="page-content">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+</div>
+
+<!-- Mobile Offcanvas Sidebar -->
+<div class="offcanvas offcanvas-start" tabindex="-1" id="mobileSidebar" style="background:var(--surface);width:240px;">
+    <div class="offcanvas-header">
+        <span class="fw-700 fs-5" style="color:var(--primary)"><i class="bi bi-wallet2"></i> Vyra</span>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body p-0">
+        <nav class="py-2">
+            <a href="{% url 'dashboard' %}" class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none" style="color:var(--text-secondary)"><i class="bi bi-speedometer2"></i> Dashboard</a>
+            <a href="{% url 'financial_hub' %}" class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none" style="color:var(--text-secondary)"><i class="bi bi-bank2"></i> Financial Hub</a>
+            <a href="{% url 'income_list' %}" class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none" style="color:var(--text-secondary)"><i class="bi bi-arrow-down-circle"></i> Income</a>
+            <a href="{% url 'expense_list' %}" class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none" style="color:var(--text-secondary)"><i class="bi bi-arrow-up-circle"></i> Expenses</a>
+            <a href="{% url 'savings_list' %}" class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none" style="color:var(--text-secondary)"><i class="bi bi-piggy-bank"></i> Savings</a>
+            <a href="{% url 'goal_list' %}" class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none" style="color:var(--text-secondary)"><i class="bi bi-trophy"></i> Goals</a>
+            <a href="{% url 'ai_advisor' %}" class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none" style="color:var(--primary)"><i class="bi bi-stars"></i> AI Advisor</a>
+        </nav>
+    </div>
+</div>
+
+{% else %}
+<!-- Public Layout -->
+<div class="public-container">
+    <div class="auth-logo">
+        <div class="logo-icon"><i class="bi bi-wallet2"></i></div>
+        <h4 class="fw-700 mt-2" style="color:var(--text-primary)">Vyra</h4>
+        <p style="color:var(--text-muted);font-size:0.83rem;">Smart Personal Wealth Management Platform</p>
+    </div>
+    {% if messages %}{% for message in messages %}
+    <div class="neu-alert {% if 'error' in message.tags %}danger{% elif 'success' in message.tags %}success{% else %}info{% endif %} mb-3">
+        {{ message }}
+    </div>
+    {% endfor %}{% endif %}
+    {% block public_content %}{% endblock %}
+</div>
+{% endif %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}Sign In – Vyra{% endblock %}
+
+{% block public_content %}
+<div class="auth-card">
+    <h4 class="fw-700 mb-1" style="color:var(--text-primary);">Welcome back</h4>
+    <p style="color:var(--text-muted);font-size:0.83rem;margin-bottom:1.75rem;">Sign in to your Vyra account</p>
+
+    <form method="post">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="neu-form-group">
+            <label class="neu-label">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}<div style="color:var(--danger);font-size:0.78rem;margin-top:0.3rem;">{{ field.errors }}</div>{% endif %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="neu-btn neu-btn-primary w-100 mt-2" style="justify-content:center;padding:0.75rem;font-size:0.9rem;">Sign In</button>
+    </form>
+
+    <p class="text-center mt-4 mb-0" style="font-size:0.83rem;color:var(--text-muted);">
+        Don't have an account? <a href="{% url 'register' %}" style="color:var(--primary);font-weight:600;">Register</a>
+    </p>
+</div>
+{% endblock %}

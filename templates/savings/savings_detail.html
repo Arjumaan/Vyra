@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block title %}{{ account.account_name }} – Vyra{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold">{{ account.account_name }}</h2>
+        <small class="text-muted">{{ account.bank }} | {{ account.get_account_type_display }}</small>
+    </div>
+    <a href="{% url 'savings_list' %}" class="btn btn-secondary">Back</a>
+</div>
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm p-4 text-center bg-success text-white">
+            <h6>Current Balance</h6>
+            <h2>₹{{ account.current_balance }}</h2>
+            {% if account.goal_amount %}
+            <p class="mt-2 mb-0">Goal: ₹{{ account.goal_amount }} by {{ account.goal_deadline }}</p>
+            <div class="progress mt-2 bg-white bg-opacity-25" style="height:10px;">
+                <div class="progress-bar bg-white" style="width: {{account.progress_percent }}%;"></div>
+            </div>
+            <small>{{ account.progress_percent }}% achieved</small>
+            {% endif %}
+        </div>
+        <div class="card border-0 shadow-sm p-4 mt-3">
+            <h6 class="fw-bold">Log Transaction</h6>
+            <form method="post">{% csrf_token %}
+                {% for field in form %}
+                <div class="mb-2"><label class="form-label small">{{ field.label }}</label>{{ field }}</div>
+                {% endfor %}
+                <button type="submit" class="btn btn-primary w-100 btn-sm">Record</button>
+            </form>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card border-0 shadow-sm p-3">
+            <h6 class="fw-bold mb-3">Transaction History</h6>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light"><tr><th>Date</th><th>Type</th><th>Amount</th><th>Notes</th></tr></thead>
+                    <tbody>
+                        {% for txn in transactions %}
+                        <tr>
+                            <td>{{ txn.date }}</td>
+                            <td><span class="badge {% if txn.transaction_type == 'deposit' %}bg-success{% else %}bg-danger{% endif %}">{{ txn.transaction_type|title }}</span></td>
+                            <td class="fw-bold {% if txn.transaction_type == 'deposit' %}text-success{% else %}text-danger{% endif %}">
+                                {% if txn.transaction_type == 'deposit' %}+{% else %}-{% endif %}₹{{ txn.amount }}
+                            </td>
+                            <td>{{ txn.notes|default:"-" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="4" class="text-center text-muted">No transactions yet.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

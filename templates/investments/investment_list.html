@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block title %}Investments – Vyra{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title"><i class="bi bi-bar-chart" style="color:var(--info)"></i> Investments</h1>
+        <p class="page-subtitle">Track all your investments in one place</p>
+    </div>
+    <a href="{% url 'investment_create' %}" class="neu-btn neu-btn-primary"><i class="bi bi-plus-circle"></i> Add Investment</a>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="stat-card"><div class="stat-icon primary"><i class="bi bi-cash-coin"></i></div><div class="stat-label">Total Invested</div><div class="stat-value primary">₹{{ total_invested }}</div></div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card"><div class="stat-icon info"><i class="bi bi-bar-chart-fill"></i></div><div class="stat-label">Current Value</div><div class="stat-value" style="color:var(--info);">₹{{ total_current }}</div></div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card"><div class="stat-icon {% if total_pl >= 0 %}success{% else %}danger{% endif %}"><i class="bi bi-graph-up"></i></div><div class="stat-label">Profit / Loss</div><div class="stat-value {% if total_pl >= 0 %}success{% else %}danger{% endif %}">₹{{ total_pl }}</div></div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-8">
+        <div class="neu-table-wrap">
+            <table class="neu-table">
+                <thead><tr><th>Investment</th><th>Type</th><th>Invested</th><th>Value</th><th>P/L</th><th>Return%</th><th></th></tr></thead>
+                <tbody>
+                {% for inv in investments %}
+                <tr>
+                    <td><div class="fw-600">{{ inv.investment_name }}</div><div style="font-size:0.75rem;color:var(--text-muted);">{{ inv.broker|default:"—" }}</div></td>
+                    <td><span class="neu-badge info">{{ inv.get_investment_type_display }}</span></td>
+                    <td>₹{{ inv.invested_amount }}</td>
+                    <td class="fw-600">₹{{ inv.current_value }}</td>
+                    <td class="fw-700 {% if inv.profit_loss >= 0 %}text-success-neu{% else %}text-danger-neu{% endif %}">₹{{ inv.profit_loss }}</td>
+                    <td class="{% if inv.return_percent >= 0 %}text-success-neu{% else %}text-danger-neu{% endif %} fw-600">{{ inv.return_percent }}%</td>
+                    <td>
+                        <div class="d-flex gap-1 justify-content-end">
+                            <a href="{% url 'investment_update' inv.pk %}" class="neu-btn-icon"><i class="bi bi-pencil"></i></a>
+                            <form method="post" action="{% url 'investment_delete' inv.pk %}" class="d-inline">{% csrf_token %}<button class="neu-btn-icon danger" type="submit"><i class="bi bi-trash"></i></button></form>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="7" class="text-center py-4" style="color:var(--text-muted);">No investments added yet.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="chart-wrap">
+            <div class="chart-title">Investment Allocation</div>
+            <canvas id="invChart" height="250"></canvas>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+{{ chart_labels|json_script:"chartLabels" }}
+{{ chart_data|json_script:"chartData" }}
+<script>
+Chart.defaults.font.family = 'Inter, sans-serif';
+Chart.defaults.color = '#7a8fa6';
+const labels = JSON.parse(document.getElementById('chartLabels').textContent);
+const data = JSON.parse(document.getElementById('chartData').textContent);
+
+new Chart(document.getElementById('invChart').getContext('2d'), {
+    type: 'doughnut',
+    data: { labels: labels, datasets: [{ data: data, backgroundColor: ['#4f7ef7','#3ecf8e','#3eb8d6','#f0a04b','#e05c6c','#8b6cf7','#20c997','#d63384'], borderWidth: 0, hoverOffset: 6 }] },
+    options: { cutout: '68%', plugins: { legend: { position: 'bottom', labels: { usePointStyle: true } } } }
+});
+</script>
+{% endblock %}

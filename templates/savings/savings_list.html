@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block title %}Savings – Vyra{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title"><i class="bi bi-piggy-bank" style="color:var(--success)"></i> Savings</h1>
+        <p class="page-subtitle">Track your savings accounts and goals</p>
+    </div>
+    <a href="{% url 'savings_create' %}" class="neu-btn neu-btn-success"><i class="bi bi-plus-circle"></i> Add Account</a>
+</div>
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="stat-card">
+            <div class="stat-icon success"><i class="bi bi-piggy-bank-fill"></i></div>
+            <div class="stat-label">Total Savings</div>
+            <div class="stat-value success">₹{{ total_savings|floatformat:0 }}</div>
+        </div>
+    </div>
+</div>
+<div class="row g-3">
+    {% for acc in accounts %}
+    <div class="col-md-4">
+        <div class="goal-card">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <div>
+                    <div class="fw-700" style="font-size:0.95rem;">{{ acc.account_name }}</div>
+                    <div style="font-size:0.78rem;color:var(--text-muted);">{{ acc.bank }} · {{ acc.get_account_type_display }}</div>
+                </div>
+                <span class="neu-badge success">{{ acc.interest_rate }}% p.a.</span>
+            </div>
+            <div class="stat-value success mb-2">₹{{ acc.current_balance }}</div>
+            {% if acc.goal_amount %}
+            <div class="mb-3">
+                <div class="d-flex justify-content-between mb-1">
+                    <small style="color:var(--text-muted);font-size:0.75rem;">Goal ₹{{ acc.goal_amount }}</small>
+                    <small style="color:var(--primary);font-weight:600;font-size:0.75rem;">{{ acc.progress_percent }}%</small>
+                </div>
+                <div class="neu-progress">
+                    <div class="neu-progress-bar success" style="width: {{acc.progress_percent }}%;"></div>
+                </div>
+            </div>
+            {% endif %}
+            <div class="d-flex gap-2 mt-3">
+                <a href="{% url 'savings_detail' acc.pk %}" class="neu-btn neu-btn-primary neu-btn-sm flex-fill">Details</a>
+                <a href="{% url 'savings_update' acc.pk %}" class="neu-btn-icon"><i class="bi bi-pencil"></i></a>
+                <form method="post" action="{% url 'savings_delete' acc.pk %}">{% csrf_token %}
+                    <button type="submit" class="neu-btn-icon danger"><i class="bi bi-trash"></i></button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="neu-card text-center" style="padding:3rem;">
+            <i class="bi bi-piggy-bank" style="font-size:3rem;color:var(--text-muted);display:block;margin-bottom:1rem;"></i>
+            <h5 style="color:var(--text-primary);">No savings accounts yet</h5>
+            <p style="color:var(--text-muted);">Add your first account to start tracking savings.</p>
+            <a href="{% url 'savings_create' %}" class="neu-btn neu-btn-success">Add Account</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

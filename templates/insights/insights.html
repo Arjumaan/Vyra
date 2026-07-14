@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-stars text-primary"></i> AI-Powered Financial Insights</h2>
+</div>
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        {% for insight in insights %}
+        <div class="card mb-3 border-start border-4 border-{{ insight.type }} shadow-sm">
+            <div class="card-body d-flex align-items-center">
+                <div class="me-4 text-{{ insight.type }}">
+                    <i class="bi {{ insight.icon }} fs-1"></i>
+                </div>
+                <div>
+                    <p class="mb-0 fs-5">{{ insight.text }}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

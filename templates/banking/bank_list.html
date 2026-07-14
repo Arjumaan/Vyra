@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block title %}Banking & Cards – Vyra{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title"><i class="bi bi-bank" style="color:var(--primary)"></i> Banking & Cards</h1>
+        <p class="page-subtitle">Manage your bank accounts and credit cards</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{% url 'bank_create' %}" class="neu-btn neu-btn-primary"><i class="bi bi-plus-circle"></i> Add Bank</a>
+        <a href="{% url 'card_create' %}" class="neu-btn"><i class="bi bi-credit-card"></i> Add Card</a>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3"><div class="stat-card"><div class="stat-icon primary"><i class="bi bi-bank-fill"></i></div><div class="stat-label">Total Bank Balance</div><div class="stat-value primary">₹{{ total_bank }}</div></div></div>
+    <div class="col-6 col-md-3"><div class="stat-card"><div class="stat-icon danger"><i class="bi bi-credit-card-fill"></i></div><div class="stat-label">Credit Used</div><div class="stat-value danger">₹{{ total_credit_used }}</div></div></div>
+    <div class="col-6 col-md-3"><div class="stat-card"><div class="stat-icon success"><i class="bi bi-shield-check"></i></div><div class="stat-label">Credit Limit</div><div class="stat-value success">₹{{ total_credit_limit }}</div></div></div>
+</div>
+
+<div class="fw-700 mb-2 mt-1" style="font-size:0.9rem;color:var(--text-secondary);">Bank Accounts</div>
+<div class="neu-table-wrap mb-4">
+    <table class="neu-table">
+        <thead><tr><th>Bank</th><th>Type</th><th>Account No.</th><th>Balance</th><th>Interest</th><th class="text-end">Actions</th></tr></thead>
+        <tbody>
+        {% for b in banks %}
+        <tr>
+            <td><div class="fw-600">{{ b.bank_name }}</div><small style="color:var(--text-muted);">{{ b.branch|default:"" }}</small></td>
+            <td><span class="neu-badge primary">{{ b.get_account_type_display }}</span></td>
+            <td style="color:var(--text-muted);">...{{ b.account_number|slice:"-4:" }}</td>
+            <td class="fw-700 text-success-neu">₹{{ b.current_balance }}</td>
+            <td>{{ b.interest_rate }}%</td>
+            <td class="text-end"><div class="d-flex gap-1 justify-content-end">
+                <a href="{% url 'bank_update' b.pk %}" class="neu-btn-icon"><i class="bi bi-pencil"></i></a>
+                <form method="post" action="{% url 'bank_delete' b.pk %}" class="d-inline">{% csrf_token %}<button class="neu-btn-icon danger" type="submit"><i class="bi bi-trash"></i></button></form>
+            </div></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" class="text-center py-3" style="color:var(--text-muted);">No bank accounts added.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="fw-700 mb-2" style="font-size:0.9rem;color:var(--text-secondary);">Credit Cards</div>
+<div class="neu-table-wrap">
+    <table class="neu-table">
+        <thead><tr><th>Card</th><th>Bank</th><th>Limit</th><th>Used</th><th>Available</th><th>Utilization</th><th>Due Date</th><th class="text-end">Actions</th></tr></thead>
+        <tbody>
+        {% for c in cards %}
+        <tr>
+            <td class="fw-600">{{ c.card_name }}</td>
+            <td style="color:var(--text-muted);">{{ c.bank }}</td>
+            <td>₹{{ c.credit_limit }}</td>
+            <td class="text-danger-neu fw-600">₹{{ c.used_credit }}</td>
+            <td class="text-success-neu fw-600">₹{{ c.available_credit }}</td>
+            <td style="min-width:130px;">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="neu-progress flex-fill" style="min-width:60px;">
+                        <div class="neu-progress-bar {% if c.utilization_percent > 70 %}danger{% elif c.utilization_percent > 40 %}warning{% else %}success{% endif %}" style="width: {{c.utilization_percent }}%;"></div>
+                    </div>
+                    <small class="fw-600" style="font-size:0.75rem;">{{ c.utilization_percent }}%</small>
+                </div>
+            </td>
+            <td>{{ c.due_date }}</td>
+            <td class="text-end"><div class="d-flex gap-1 justify-content-end">
+                <a href="{% url 'card_update' c.pk %}" class="neu-btn-icon"><i class="bi bi-pencil"></i></a>
+                <form method="post" action="{% url 'card_delete' c.pk %}" class="d-inline">{% csrf_token %}<button class="neu-btn-icon danger" type="submit"><i class="bi bi-trash"></i></button></form>
+            </div></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="8" class="text-center py-3" style="color:var(--text-muted);">No credit cards added.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

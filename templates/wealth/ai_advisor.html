@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block title %}AI Advisor – Vyra{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title"><i class="bi bi-stars" style="color:var(--warning)"></i> AI Financial Advisor</h1>
+        <p class="page-subtitle">Personalized insights powered by your data</p>
+    </div>
+    <a href="{% url 'financial_hub' %}" class="neu-btn"><i class="bi bi-arrow-left"></i> Back to Hub</a>
+</div>
+
+<!-- Health Score Card -->
+<div class="neu-card mb-4" style="background:linear-gradient(135deg,#4f7ef7,#8b6cf7);">
+    <div class="neu-card-body d-flex justify-content-between align-items-center flex-wrap gap-4" style="padding:2rem;">
+        <div class="text-white">
+            <div style="font-size:0.75rem;font-weight:700;opacity:0.7;text-transform:uppercase;letter-spacing:0.1em;">Financial Health Score</div>
+            <h2 style="font-size:1.5rem;font-weight:700;margin:0.5rem 0 0.3rem;">
+                Assets: ₹{{ total_assets|floatformat:0 }}&nbsp;·&nbsp;Net Worth: ₹{{ net_worth|floatformat:0 }}
+            </h2>
+            <p style="opacity:0.7;font-size:0.82rem;margin:0;">Liabilities: ₹{{ total_liabilities|floatformat:0 }}</p>
+        </div>
+        <div style="text-align:center;background:rgba(255,255,255,0.15);border-radius:20px;padding:1.25rem 2rem;backdrop-filter:blur(4px);">
+            <div style="font-size:3.5rem;font-weight:800;color:#fff;line-height:1;">{{ health_score }}</div>
+            <div style="font-size:0.75rem;color:rgba(255,255,255,0.75);">out of 100</div>
+            <!-- Progress ring -->
+            <div style="margin-top:0.5rem;">
+                <span style="background:rgba(255,255,255,0.25);border-radius:20px;padding:0.2rem 0.8rem;font-size:0.75rem;font-weight:700;color:#fff;">
+                    {% if health_score >= 80 %}⭐ Excellent{% elif health_score >= 60 %}👍 Good{% else %}⚠️ Needs Work{% endif %}
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Insights -->
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        {% for insight in insights %}
+        <div class="insight-card">
+            <div class="insight-icon {{ insight.type }}">
+                <i class="bi {{ insight.icon }}"></i>
+            </div>
+            <div class="insight-text">{{ insight.text }}</div>
+        </div>
+        {% empty %}
+        <div class="neu-card text-center" style="padding:3rem;">
+            <i class="bi bi-stars" style="font-size:3rem;color:var(--warning);display:block;margin-bottom:1rem;"></i>
+            <h5 style="color:var(--text-primary);">No insights yet</h5>
+            <p style="color:var(--text-muted);">Add income, expenses, and assets to get personalized AI insights.</p>
+            <a href="{% url 'financial_hub' %}" class="neu-btn neu-btn-primary">Go to Financial Hub</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

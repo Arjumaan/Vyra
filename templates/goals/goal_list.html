@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}Goals – Vyra{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title"><i class="bi bi-trophy" style="color:var(--warning)"></i> Financial Goals</h1>
+        <p class="page-subtitle">Set targets and track your progress</p>
+    </div>
+    <a href="{% url 'goal_create' %}" class="neu-btn neu-btn-primary"><i class="bi bi-plus-circle"></i> Add Goal</a>
+</div>
+<div class="row g-3">
+    {% for goal in goals %}
+    <div class="col-md-4">
+        <div class="goal-card">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <div>
+                    <div class="fw-700" style="font-size:0.95rem;">{{ goal.goal_name }}</div>
+                    <div style="font-size:0.75rem;color:var(--text-muted);">{{ goal.get_goal_type_display }}</div>
+                </div>
+                <span class="neu-badge {% if goal.progress_percent >= 75 %}success{% elif goal.progress_percent >= 40 %}warning{% else %}danger{% endif %}">{{ goal.progress_percent }}%</span>
+            </div>
+            <div class="neu-progress my-2">
+                <div class="neu-progress-bar {% if goal.progress_percent >= 75 %}success{% elif goal.progress_percent >= 40 %}warning{% else %}danger{% endif %}" style="width: {{goal.progress_percent }}%;"></div>
+            </div>
+            <div class="d-flex justify-content-between mt-2 mb-1">
+                <small style="color:var(--text-muted);">Saved: <strong style="color:var(--success);">₹{{ goal.current_amount }}</strong></small>
+                <small style="color:var(--text-muted);">Target: <strong>₹{{ goal.target_amount }}</strong></small>
+            </div>
+            <div class="d-flex justify-content-between mb-3">
+                <small style="color:var(--text-muted);">Remaining: <strong style="color:var(--danger);">₹{{ goal.remaining_amount }}</strong></small>
+                <small style="color:var(--text-muted);">{{ goal.days_remaining }} days left</small>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="{% url 'goal_update' goal.pk %}" class="neu-btn neu-btn-sm flex-fill" style="justify-content:center;"><i class="bi bi-pencil"></i> Edit</a>
+                <form method="post" action="{% url 'goal_delete' goal.pk %}">{% csrf_token %}
+                    <button class="neu-btn-icon danger" type="submit"><i class="bi bi-trash"></i></button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="neu-card text-center" style="padding:3rem;">
+            <i class="bi bi-trophy" style="font-size:3rem;color:var(--text-muted);display:block;margin-bottom:1rem;"></i>
+            <h5 style="color:var(--text-primary);">No goals set yet</h5>
+            <p style="color:var(--text-muted);">Define financial goals to stay focused and motivated.</p>
+            <a href="{% url 'goal_create' %}" class="neu-btn neu-btn-primary">Create First Goal</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

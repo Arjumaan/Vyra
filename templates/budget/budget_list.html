@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Budget Management – Vyra{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title"><i class="bi bi-piggy-bank" style="color:var(--primary)"></i> Budget Management</h1>
+        <p class="page-subtitle">Plan and track your monthly spending limits</p>
+    </div>
+    <a href="{% url 'budget_create' %}" class="neu-btn neu-btn-primary"><i class="bi bi-plus-circle"></i> Set Budget</a>
+</div>
+
+<div class="neu-table-wrap">
+    <table class="neu-table">
+        <thead>
+            <tr>
+                <th>Month / Year</th>
+                <th>Monthly Budget</th>
+                <th class="text-end">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for budget in budgets %}
+            <tr>
+                <td class="fw-600">{{ budget.get_month_display }} {{ budget.year }}</td>
+                <td class="fw-700 text-primary">₹{{ budget.monthly_budget }}</td>
+                <td class="text-end">
+                    <div class="d-flex gap-1 justify-content-end">
+                        <a href="{% url 'budget_update' budget.pk %}" class="neu-btn-icon"><i class="bi bi-pencil"></i></a>
+                        <form method="post" action="{% url 'budget_delete' budget.pk %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="neu-btn-icon danger"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3" class="text-center py-4" style="color:var(--text-muted);">No budgets set. Create your first monthly budget!</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

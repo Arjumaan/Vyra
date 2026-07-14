@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %}Manage Categories – Vyra{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title"><i class="bi bi-tags" style="color:var(--primary)"></i> Manage Categories</h1>
+        <p class="page-subtitle">Organize your expenses into categories</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-5">
+        <div class="neu-card">
+            <div class="neu-card-body">
+                <h5 class="fw-700 mb-3" style="color:var(--text-primary);">Add New Category</h5>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="neu-form-group">
+                        <label class="neu-label">Category Name</label>
+                        {{ form.category_name }}
+                    </div>
+                    <button type="submit" class="neu-btn neu-btn-primary w-100" style="justify-content:center;margin-top:0.5rem;padding:0.7rem;">Add Category</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-7">
+        <div class="neu-card h-100">
+            <div class="neu-card-body">
+                <h5 class="fw-700 mb-3" style="color:var(--text-primary);">Your Categories</h5>
+                
+                <div class="d-flex flex-column gap-2">
+                    {% for category in categories %}
+                    <div class="d-flex justify-content-between align-items-center" style="padding:0.75rem 1rem;border-radius:var(--radius-md);background:var(--bg-light);border:1px solid rgba(190,200,213,0.3);">
+                        <span class="fw-600">{{ category.category_name }}</span>
+                        <form method="post" action="{% url 'category_delete' category.pk %}">
+                            {% csrf_token %}
+                            <button type="submit" class="neu-btn-icon danger"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </div>
+                    {% empty %}
+                    <div class="text-center py-4" style="color:var(--text-muted);">No categories found. Create one to get started!</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

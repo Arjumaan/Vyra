@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}Income Records – Vyra{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title"><i class="bi bi-wallet2" style="color:var(--success)"></i> Income Records</h1>
+        <p class="page-subtitle">Track your various sources of income</p>
+    </div>
+    <a href="{% url 'income_create' %}" class="neu-btn neu-btn-success"><i class="bi bi-plus-circle"></i> Add Income</a>
+</div>
+
+<div class="neu-table-wrap">
+    <table class="neu-table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Source</th>
+                <th>Amount</th>
+                <th>Notes</th>
+                <th class="text-end">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for income in incomes %}
+            <tr>
+                <td style="color:var(--text-muted);">{{ income.date|date:"M d, Y" }}</td>
+                <td class="fw-600">{{ income.source }}</td>
+                <td class="fw-700 text-success-neu">₹{{ income.amount }}</td>
+                <td style="color:var(--text-muted);font-size:0.85rem;">{{ income.notes|default:"-"|truncatechars:30 }}</td>
+                <td class="text-end">
+                    <div class="d-flex gap-1 justify-content-end">
+                        <a href="{% url 'income_update' income.pk %}" class="neu-btn-icon"><i class="bi bi-pencil"></i></a>
+                        <form method="post" action="{% url 'income_delete' income.pk %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="neu-btn-icon danger"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-center py-4" style="color:var(--text-muted);">No income records found. Start adding your income!</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

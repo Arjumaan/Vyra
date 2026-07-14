@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}Insurance – Vyra{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title"><i class="bi bi-shield-check" style="color:var(--success)"></i> Insurance Policies</h1>
+        <p class="page-subtitle">Manage all your insurance policies</p>
+    </div>
+    <a href="{% url 'insurance_create' %}" class="neu-btn neu-btn-success"><i class="bi bi-plus-circle"></i> Add Policy</a>
+</div>
+<div class="row g-3 mb-4">
+    <div class="col-md-4"><div class="stat-card"><div class="stat-icon success"><i class="bi bi-shield-fill-check"></i></div><div class="stat-label">Total Annual Premium</div><div class="stat-value success">₹{{ total_premium }}</div></div></div>
+</div>
+<div class="neu-table-wrap">
+    <table class="neu-table">
+        <thead><tr><th>Policy</th><th>Type</th><th>Provider</th><th>Premium</th><th>Renewal</th><th>Days Left</th><th>Coverage</th><th class="text-end">Actions</th></tr></thead>
+        <tbody>
+        {% for p in policies %}
+        <tr>
+            <td><div class="fw-600">{{ p.policy_name }}</div><small style="color:var(--text-muted);">{{ p.policy_number }}</small></td>
+            <td><span class="neu-badge success">{{ p.get_insurance_type_display }}</span></td>
+            <td style="color:var(--text-muted);">{{ p.provider }}</td>
+            <td>₹{{ p.premium_amount }}<br><small style="color:var(--text-muted);">{{ p.get_premium_frequency_display }}</small></td>
+            <td>{{ p.renewal_date }}</td>
+            <td><span class="fw-700 {% if p.days_to_renewal <= 30 %}text-danger-neu{% elif p.days_to_renewal <= 90 %}text-warning-neu{% else %}text-success-neu{% endif %}">{{ p.days_to_renewal }}d</span></td>
+            <td>₹{{ p.coverage_amount }}</td>
+            <td class="text-end">
+                <div class="d-flex gap-1 justify-content-end">
+                    <a href="{% url 'insurance_update' p.pk %}" class="neu-btn-icon"><i class="bi bi-pencil"></i></a>
+                    <form method="post" action="{% url 'insurance_delete' p.pk %}" class="d-inline">{% csrf_token %}<button class="neu-btn-icon danger" type="submit"><i class="bi bi-trash"></i></button></form>
+                </div>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="8" class="text-center py-4" style="color:var(--text-muted);">No insurance policies added.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

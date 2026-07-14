@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}Stock Portfolio – Vyra{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title"><i class="bi bi-graph-up-arrow" style="color:var(--warning)"></i> Stock Portfolio</h1>
+        <p class="page-subtitle">Track your stock investments and market performance</p>
+    </div>
+    <a href="{% url 'stock_create' %}" class="neu-btn neu-btn-warning"><i class="bi bi-plus-circle"></i> Add Stock</a>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-4"><div class="stat-card"><div class="stat-icon primary"><i class="bi bi-cash-coin"></i></div><div class="stat-label">Total Invested</div><div class="stat-value primary">₹{{ total_invested }}</div></div></div>
+    <div class="col-6 col-md-4"><div class="stat-card"><div class="stat-icon warning"><i class="bi bi-graph-up-arrow"></i></div><div class="stat-label">Market Value</div><div class="stat-value warning">₹{{ total_current }}</div></div></div>
+    <div class="col-12 col-md-4"><div class="stat-card"><div class="stat-icon {% if total_pl >= 0 %}success{% else %}danger{% endif %}"><i class="bi bi-activity"></i></div><div class="stat-label">Overall P/L</div><div class="stat-value {% if total_pl >= 0 %}success{% else %}danger{% endif %}">₹{{ total_pl }}</div></div></div>
+</div>
+
+<div class="neu-table-wrap">
+    <table class="neu-table">
+        <thead><tr><th>Symbol / Company</th><th>Qty</th><th>Avg Price</th><th>CMP</th><th>Invested</th><th>Value</th><th>P/L</th><th>Return%</th><th class="text-end">Actions</th></tr></thead>
+        <tbody>
+        {% for s in stocks %}
+        <tr>
+            <td>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="neu-badge muted">{{ s.stock_symbol }}</span>
+                    <div>
+                        <div class="fw-600" style="font-size:0.85rem;">{{ s.company_name }}</div>
+                        <div style="font-size:0.75rem;color:var(--text-muted);">{{ s.exchange }}</div>
+                    </div>
+                </div>
+            </td>
+            <td>{{ s.quantity }}</td>
+            <td>₹{{ s.buy_price }}</td>
+            <td class="fw-600">₹{{ s.current_price }}</td>
+            <td>₹{{ s.invested_amount|floatformat:0 }}</td>
+            <td class="fw-600">₹{{ s.current_value|floatformat:0 }}</td>
+            <td class="fw-700 {% if s.profit_loss >= 0 %}text-success-neu{% else %}text-danger-neu{% endif %}">₹{{ s.profit_loss|floatformat:0 }}</td>
+            <td class="fw-600 {% if s.return_percent >= 0 %}text-success-neu{% else %}text-danger-neu{% endif %}">{{ s.return_percent }}%</td>
+            <td class="text-end">
+                <div class="d-flex gap-1 justify-content-end">
+                    <a href="{% url 'stock_update' s.pk %}" class="neu-btn-icon"><i class="bi bi-pencil"></i></a>
+                    <form method="post" action="{% url 'stock_delete' s.pk %}" class="d-inline">{% csrf_token %}<button class="neu-btn-icon danger" type="submit"><i class="bi bi-trash"></i></button></form>
+                </div>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="9" class="text-center py-4" style="color:var(--text-muted);">No stocks in portfolio yet.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,27 @@
+﻿{% extends 'base.html' %}
+{% block title %}{{ title }} - Vyra{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div><h1 class="page-title">{{ title }}</h1></div>
+    <a href="{% url 'crypto_list' %}" class="neu-btn"><i class="bi bi-arrow-left"></i> Crypto</a>
+</div>
+<div class="row justify-content-center">
+    <div class="col-md-7">
+        <div class="neu-card">
+            <div class="neu-card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {% for field in form %}
+                    <div class="neu-form-group">
+                        <label class="neu-label">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}<div style="color:var(--danger);font-size:0.78rem;margin-top:0.3rem;">{{ field.errors }}</div>{% endif %}
+                    </div>
+                    {% endfor %}
+                    <button type="submit" class="neu-btn neu-btn-danger w-100" style="justify-content:center;padding:0.7rem;margin-top:0.5rem;">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

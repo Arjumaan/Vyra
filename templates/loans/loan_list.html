@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Loan Management – Vyra{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title"><i class="bi bi-bank2" style="color:var(--danger)"></i> Loan Management</h1>
+        <p class="page-subtitle">Track all your outstanding loans and EMIs</p>
+    </div>
+    <a href="{% url 'loan_create' %}" class="neu-btn neu-btn-danger"><i class="bi bi-plus-circle"></i> Add Loan</a>
+</div>
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-4"><div class="stat-card"><div class="stat-icon danger"><i class="bi bi-cash-stack"></i></div><div class="stat-label">Total Outstanding</div><div class="stat-value danger">₹{{ total_outstanding }}</div></div></div>
+    <div class="col-6 col-md-4"><div class="stat-card"><div class="stat-icon warning"><i class="bi bi-calendar-check"></i></div><div class="stat-label">Monthly EMI</div><div class="stat-value warning">₹{{ total_emi }}</div></div></div>
+</div>
+<div class="neu-table-wrap">
+    <table class="neu-table">
+        <thead><tr><th>Loan</th><th>Type</th><th>Lender</th><th>Outstanding</th><th>EMI</th><th>Rate%</th><th>Progress</th><th class="text-end">Actions</th></tr></thead>
+        <tbody>
+        {% for loan in loans %}
+        <tr>
+            <td class="fw-600">{{ loan.loan_name }}</td>
+            <td><span class="neu-badge muted">{{ loan.get_loan_type_display }}</span></td>
+            <td style="color:var(--text-muted);">{{ loan.lender }}</td>
+            <td class="fw-700 text-danger-neu">₹{{ loan.outstanding_balance }}</td>
+            <td>₹{{ loan.emi_amount }}<br><small style="color:var(--text-muted);">Day {{ loan.emi_date }}</small></td>
+            <td>{{ loan.interest_rate }}%</td>
+            <td style="min-width:120px;">
+                <div class="neu-progress mb-1"><div class="neu-progress-bar success" style="width: {{loan.progress_percent }}%;"></div></div>
+                <small style="color:var(--text-muted);font-size:0.72rem;">{{ loan.progress_percent }}% paid</small>
+            </td>
+            <td class="text-end">
+                <div class="d-flex gap-1 justify-content-end">
+                    <a href="{% url 'loan_update' loan.pk %}" class="neu-btn-icon"><i class="bi bi-pencil"></i></a>
+                    <form method="post" action="{% url 'loan_delete' loan.pk %}" class="d-inline">{% csrf_token %}<button class="neu-btn-icon danger" type="submit"><i class="bi bi-trash"></i></button></form>
+                </div>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="8" class="text-center py-4" style="color:var(--text-muted);">No loans added.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

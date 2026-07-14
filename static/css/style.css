@@ -1,0 +1,705 @@
+/* =============================================
+   Vyra – Neumorphism Design System
+   Theme: Soft Light with Depth
+   ============================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* --- Design Tokens --- */
+:root {
+  --bg: #eaf0f7;
+  --surface: #eaf0f7;
+  --shadow-dark: #bec8d5;
+  --shadow-light: #ffffff;
+  --primary: #4f7ef7;
+  --primary-light: #ebf0fe;
+  --success: #3ecf8e;
+  --success-light: #e8faf3;
+  --danger: #e05c6c;
+  --danger-light: #fdeef0;
+  --warning: #f0a04b;
+  --warning-light: #fef6ec;
+  --info: #3eb8d6;
+  --info-light: #e8f7fb;
+  --purple: #8b6cf7;
+  --purple-light: #f0ecfe;
+  --text-primary: #2b3a52;
+  --text-secondary: #7a8fa6;
+  --text-muted: #a0b0c0;
+  --radius-sm: 10px;
+  --radius: 16px;
+  --radius-lg: 22px;
+  --radius-xl: 28px;
+  --shadow-neu: 8px 8px 18px var(--shadow-dark), -8px -8px 18px var(--shadow-light);
+  --shadow-neu-sm: 4px 4px 10px var(--shadow-dark), -4px -4px 10px var(--shadow-light);
+  --shadow-neu-lg: 14px 14px 28px var(--shadow-dark), -14px -14px 28px var(--shadow-light);
+  --shadow-inset: inset 4px 4px 10px var(--shadow-dark), inset -4px -4px 10px var(--shadow-light);
+  --shadow-inset-sm: inset 2px 2px 6px var(--shadow-dark), inset -2px -2px 6px var(--shadow-light);
+  --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* --- Global Reset --- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* =============================================
+   SIDEBAR
+   ============================================= */
+.neu-sidebar {
+  width: 240px;
+  min-height: 100vh;
+  background: var(--surface);
+  box-shadow: 6px 0 20px var(--shadow-dark);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.sidebar-brand {
+  padding: 1.5rem 1.25rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.sidebar-brand .brand-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: var(--shadow-neu-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  font-size: 1.2rem;
+}
+
+.sidebar-brand .brand-text {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.sidebar-brand .brand-text span {
+  color: var(--primary);
+}
+
+.sidebar-section {
+  padding: 0.75rem 1.25rem 0.25rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.sidebar-divider {
+  margin: 0.5rem 1.25rem;
+  border: none;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--shadow-dark), transparent);
+}
+
+.neu-sidebar nav a {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.5rem 1rem;
+  margin: 2px 0.75rem;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: var(--transition);
+}
+
+.neu-sidebar nav a i {
+  width: 20px;
+  text-align: center;
+  font-size: 1rem;
+}
+
+.neu-sidebar nav a:hover {
+  background: var(--surface);
+  box-shadow: var(--shadow-neu-sm);
+  color: var(--text-primary);
+}
+
+.neu-sidebar nav a.active {
+  background: var(--surface);
+  box-shadow: var(--shadow-inset-sm);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.sidebar-logout {
+  margin: 0.5rem 0.75rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  background: none;
+  border-radius: var(--radius-sm);
+  color: var(--danger);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  width: calc(100% - 1.5rem);
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  transition: var(--transition);
+}
+
+.sidebar-logout:hover {
+  background: var(--danger-light);
+  box-shadow: var(--shadow-neu-sm);
+}
+
+/* =============================================
+   LAYOUT
+   ============================================= */
+.app-wrapper {
+  display: flex;
+  min-height: 100vh;
+}
+
+.main-area {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  background: var(--surface);
+  padding: 0.875rem 1.75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 12px var(--shadow-dark);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.topbar-title {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.topbar-title strong { color: var(--text-primary); }
+
+.page-content {
+  flex: 1;
+  padding: 1.75rem;
+}
+
+/* =============================================
+   NEU CARD
+   ============================================= */
+.neu-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-neu);
+  border: none;
+  overflow: hidden;
+}
+
+.neu-card-sm {
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-neu-sm);
+  border: none;
+}
+
+.neu-card-inner {
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-inset);
+  border: none;
+}
+
+.neu-card-body { padding: 1.25rem 1.5rem; }
+.neu-card-sm .neu-card-body { padding: 1rem 1.25rem; }
+
+/* =============================================
+   STAT CARDS
+   ============================================= */
+.stat-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-neu);
+  padding: 1.25rem 1.5rem;
+  transition: var(--transition);
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-neu-lg);
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  box-shadow: var(--shadow-neu-sm);
+  margin-bottom: 0.75rem;
+}
+
+.stat-icon.primary { background: var(--surface); color: var(--primary); }
+.stat-icon.success { background: var(--surface); color: var(--success); }
+.stat-icon.danger  { background: var(--surface); color: var(--danger); }
+.stat-icon.warning { background: var(--surface); color: var(--warning); }
+.stat-icon.info    { background: var(--surface); color: var(--info); }
+.stat-icon.purple  { background: var(--surface); color: var(--purple); }
+
+.stat-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
+  margin-bottom: 0.25rem;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.stat-value.primary { color: var(--primary); }
+.stat-value.success { color: var(--success); }
+.stat-value.danger  { color: var(--danger); }
+.stat-value.warning { color: var(--warning); }
+
+/* =============================================
+   BUTTONS
+   ============================================= */
+.neu-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1.1rem;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition);
+  text-decoration: none;
+  background: var(--surface);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-neu-sm);
+}
+
+.neu-btn:hover {
+  box-shadow: var(--shadow-neu);
+  color: var(--text-primary);
+}
+
+.neu-btn:active {
+  box-shadow: var(--shadow-inset-sm);
+  transform: scale(0.98);
+}
+
+.neu-btn-primary { background: var(--primary); color: #fff; box-shadow: 4px 4px 12px rgba(79,126,247,0.35), -4px -4px 12px var(--shadow-light); }
+.neu-btn-primary:hover { background: #3d6de4; color: #fff; box-shadow: 6px 6px 16px rgba(79,126,247,0.4), -4px -4px 12px var(--shadow-light); }
+
+.neu-btn-success { background: var(--success); color: #fff; box-shadow: 4px 4px 12px rgba(62,207,142,0.35), -4px -4px 12px var(--shadow-light); }
+.neu-btn-success:hover { color: #fff; }
+
+.neu-btn-danger { background: var(--danger); color: #fff; box-shadow: 4px 4px 12px rgba(224,92,108,0.35), -4px -4px 12px var(--shadow-light); }
+.neu-btn-danger:hover { color: #fff; }
+
+.neu-btn-warning { background: var(--warning); color: #fff; box-shadow: 4px 4px 12px rgba(240,160,75,0.35), -4px -4px 12px var(--shadow-light); }
+.neu-btn-warning:hover { color: #fff; }
+
+.neu-btn-sm { padding: 0.35rem 0.75rem; font-size: 0.77rem; border-radius: 8px; }
+
+/* Icon-only button */
+.neu-btn-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface);
+  box-shadow: var(--shadow-neu-sm);
+  border: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: var(--transition);
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+.neu-btn-icon:hover { color: var(--primary); transform: translateY(-1px); }
+.neu-btn-icon.danger:hover { color: var(--danger); }
+
+/* =============================================
+   BADGES
+   ============================================= */
+.neu-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.65rem;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  box-shadow: var(--shadow-inset-sm);
+}
+
+.neu-badge.primary { background: var(--primary-light); color: var(--primary); }
+.neu-badge.success { background: var(--success-light); color: var(--success); }
+.neu-badge.danger  { background: var(--danger-light); color: var(--danger); }
+.neu-badge.warning { background: var(--warning-light); color: var(--warning); }
+.neu-badge.info    { background: var(--info-light); color: var(--info); }
+.neu-badge.purple  { background: var(--purple-light); color: var(--purple); }
+.neu-badge.muted   { background: var(--surface); color: var(--text-muted); box-shadow: var(--shadow-neu-sm); }
+
+/* =============================================
+   FORMS
+   ============================================= */
+.neu-form-group { margin-bottom: 1.1rem; }
+
+.neu-label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.neu-input,
+input[type="text"],
+input[type="number"],
+input[type="date"],
+input[type="email"],
+input[type="password"],
+select,
+textarea {
+  display: block;
+  width: 100%;
+  padding: 0.6rem 0.9rem;
+  font-size: 0.88rem;
+  color: var(--text-primary);
+  background: var(--surface);
+  border: none;
+  border-radius: 10px;
+  box-shadow: var(--shadow-inset);
+  transition: var(--transition);
+  font-family: inherit;
+  outline: none;
+  appearance: auto;
+}
+
+input:focus, select:focus, textarea:focus {
+  box-shadow: var(--shadow-inset), 0 0 0 3px rgba(79,126,247,0.15);
+}
+
+input[type="checkbox"] {
+  width: auto;
+  display: inline-block;
+  box-shadow: var(--shadow-inset-sm);
+  border-radius: 4px;
+}
+
+/* =============================================
+   PROGRESS BARS
+   ============================================= */
+.neu-progress {
+  height: 10px;
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: var(--shadow-inset-sm);
+  overflow: hidden;
+}
+
+.neu-progress-bar {
+  height: 100%;
+  border-radius: 20px;
+  transition: width 0.5s ease;
+}
+
+.neu-progress-bar.primary { background: linear-gradient(90deg, var(--primary), #7ba3ff); }
+.neu-progress-bar.success { background: linear-gradient(90deg, var(--success), #7fedb8); }
+.neu-progress-bar.warning { background: linear-gradient(90deg, var(--warning), #ffd08a); }
+.neu-progress-bar.danger  { background: linear-gradient(90deg, var(--danger), #f0929e); }
+
+/* =============================================
+   TABLE
+   ============================================= */
+.neu-table-wrap {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-neu);
+  overflow: hidden;
+}
+
+.neu-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.neu-table thead th {
+  background: var(--surface);
+  padding: 0.85rem 1.25rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  border-bottom: 2px solid var(--shadow-dark);
+  white-space: nowrap;
+}
+
+.neu-table tbody td {
+  padding: 0.85rem 1.25rem;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  border-bottom: 1px solid rgba(190,200,213,0.4);
+  vertical-align: middle;
+}
+
+.neu-table tbody tr:last-child td { border-bottom: none; }
+
+.neu-table tbody tr {
+  transition: var(--transition);
+}
+
+.neu-table tbody tr:hover {
+  background: rgba(255,255,255,0.6);
+}
+
+/* =============================================
+   PAGE HEADER
+   ============================================= */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.75rem;
+}
+
+.page-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+  margin-bottom: 0.2rem;
+}
+
+.page-subtitle {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+/* =============================================
+   ALERT BOXES
+   ============================================= */
+.neu-alert {
+  padding: 0.85rem 1.25rem;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  box-shadow: var(--shadow-neu-sm);
+}
+
+.neu-alert.danger  { background: var(--danger-light); color: var(--danger); }
+.neu-alert.warning { background: var(--warning-light); color: var(--warning); }
+.neu-alert.success { background: var(--success-light); color: var(--success); }
+.neu-alert.info    { background: var(--info-light); color: var(--info); }
+
+/* =============================================
+   HEALTH SCORE RING (SVG)
+   ============================================= */
+.health-ring-wrap {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  flex-shrink: 0;
+}
+
+.health-ring-wrap .score-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+/* =============================================
+   CHART WRAPPER
+   ============================================= */
+.chart-wrap {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-neu);
+  padding: 1.25rem;
+}
+
+.chart-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+/* =============================================
+   INSIGHT CARDS
+   ============================================= */
+.insight-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-neu);
+  padding: 1.1rem 1.35rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 0.9rem;
+  transition: var(--transition);
+}
+
+.insight-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-neu-lg); }
+
+.insight-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-neu-sm);
+}
+
+.insight-icon.success { background: var(--success-light); color: var(--success); }
+.insight-icon.danger  { background: var(--danger-light); color: var(--danger); }
+.insight-icon.warning { background: var(--warning-light); color: var(--warning); }
+.insight-icon.info    { background: var(--info-light); color: var(--info); }
+
+.insight-text {
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+/* =============================================
+   GOAL / SAVINGS CARDS
+   ============================================= */
+.goal-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-neu);
+  padding: 1.25rem;
+  transition: var(--transition);
+}
+
+.goal-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-neu-lg); }
+
+/* =============================================
+   MINI MODULE QUICKLINKS
+   ============================================= */
+.quicklink {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-neu);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.1rem 0.75rem;
+  text-decoration: none;
+  transition: var(--transition);
+  gap: 0.5rem;
+}
+
+.quicklink:hover { transform: translateY(-3px); box-shadow: var(--shadow-neu-lg); }
+
+.quicklink i { font-size: 1.5rem; }
+.quicklink span { font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); }
+
+/* =============================================
+   MISC UTILITIES
+   ============================================= */
+.text-primary-neu { color: var(--primary) !important; }
+.text-success-neu { color: var(--success) !important; }
+.text-danger-neu  { color: var(--danger) !important; }
+.text-warning-neu { color: var(--warning) !important; }
+.text-muted-neu   { color: var(--text-muted) !important; }
+
+.fw-700 { font-weight: 700 !important; }
+.fw-600 { font-weight: 600 !important; }
+
+.gap-sm { gap: 0.5rem; }
+.gap-md { gap: 1rem; }
+
+/* Public layout */
+.public-container {
+  max-width: 460px;
+  margin: 4rem auto;
+  padding: 0 1rem;
+}
+
+.auth-card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-neu-lg);
+  padding: 2.5rem;
+}
+
+.auth-logo {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.auth-logo .logo-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  background: var(--surface);
+  box-shadow: var(--shadow-neu);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  color: var(--primary);
+  margin-bottom: 0.75rem;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--shadow-dark); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #9baabb; }

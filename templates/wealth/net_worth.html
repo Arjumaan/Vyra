@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% block title %}Net Worth – Vyra{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title"><i class="bi bi-graph-up-arrow" style="color:var(--primary)"></i> Net Worth Statement</h1>
+        <p class="page-subtitle">Detailed breakdown of assets and liabilities</p>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <!-- Assets -->
+    <div class="col-md-4">
+        <div class="neu-card h-100">
+            <div class="neu-card-body">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="fw-700 m-0" style="color:var(--success);"><i class="bi bi-safe2"></i> Assets</h5>
+                    <span class="neu-badge success">Positive</span>
+                </div>
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                    <span style="color:var(--text-secondary);">Bank Balance</span>
+                    <span class="fw-600">₹{{ bank_balance|floatformat:2 }}</span>
+                </div>
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                    <span style="color:var(--text-secondary);">Savings</span>
+                    <span class="fw-600">₹{{ savings_balance|floatformat:2 }}</span>
+                </div>
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                    <span style="color:var(--text-secondary);">Investments</span>
+                    <span class="fw-600">₹{{ investment_value|floatformat:2 }}</span>
+                </div>
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                    <span style="color:var(--text-secondary);">Stocks</span>
+                    <span class="fw-600">₹{{ stock_value|floatformat:2 }}</span>
+                </div>
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                    <span style="color:var(--text-secondary);">Crypto</span>
+                    <span class="fw-600">₹{{ crypto_value|floatformat:2 }}</span>
+                </div>
+                <div class="d-flex justify-content-between py-3 mt-2" style="background:var(--success-light);border-radius:var(--radius-sm);padding:0 1rem;">
+                    <span class="fw-700 text-success-neu">Total Assets</span>
+                    <span class="fw-700 text-success-neu">₹{{ total_assets|floatformat:2 }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Liabilities -->
+    <div class="col-md-4">
+        <div class="neu-card h-100">
+            <div class="neu-card-body">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="fw-700 m-0" style="color:var(--danger);"><i class="bi bi-arrow-down-circle"></i> Liabilities</h5>
+                    <span class="neu-badge danger">Negative</span>
+                </div>
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                    <span style="color:var(--text-secondary);">Outstanding Loans</span>
+                    <span class="fw-600">₹{{ total_loans|floatformat:2 }}</span>
+                </div>
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                    <span style="color:var(--text-secondary);">Credit Card Used</span>
+                    <span class="fw-600">₹{{ total_credit_used|floatformat:2 }}</span>
+                </div>
+                <div class="d-flex justify-content-between py-3 mt-auto" style="background:var(--danger-light);border-radius:var(--radius-sm);padding:0 1rem;margin-top:2rem;">
+                    <span class="fw-700 text-danger-neu">Total Liabilities</span>
+                    <span class="fw-700 text-danger-neu">₹{{ total_liabilities|floatformat:2 }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Net Worth Total -->
+    <div class="col-md-4">
+        <div class="neu-card h-100 d-flex flex-column align-items-center justify-content-center text-center" style="background:linear-gradient(135deg,#4f7ef7,#8b6cf7);">
+            <div class="neu-card-body text-white">
+                <div style="background:rgba(255,255,255,0.2);width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;font-size:2.5rem;box-shadow:0 8px 16px rgba(0,0,0,0.1);">
+                    <i class="bi bi-trophy-fill"></i>
+                </div>
+                <h5 style="font-weight:600;opacity:0.9;text-transform:uppercase;letter-spacing:0.05em;font-size:0.9rem;">Total Net Worth</h5>
+                <div style="font-size:2.5rem;font-weight:800;line-height:1.2;margin:0.5rem 0;">₹{{ net_worth|floatformat:0 }}</div>
+                <p style="opacity:0.75;font-size:0.85rem;margin:0;">Assets minus Liabilities</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="chart-wrap">
+            <div class="chart-title">Asset Allocation</div>
+            <canvas id="assetPie" height="220"></canvas>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="chart-wrap">
+            <div class="chart-title">Liability Breakdown</div>
+            <canvas id="liabPie" height="220"></canvas>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ asset_labels|json_script:"assetLabels" }}
+{{ asset_data|json_script:"assetData" }}
+{{ liability_labels|json_script:"liabilityLabels" }}
+{{ liability_data|json_script:"liabilityData" }}
+<script>
+Chart.defaults.font.family = 'Inter, sans-serif';
+Chart.defaults.color = '#7a8fa6';
+const aLabels = JSON.parse(document.getElementById('assetLabels').textContent);
+const aData = JSON.parse(document.getElementById('assetData').textContent);
+const lLabels = JSON.parse(document.getElementById('liabilityLabels').textContent);
+const lData = JSON.parse(document.getElementById('liabilityData').textContent);
+
+new Chart(document.getElementById('assetPie').getContext('2d'), {
+    type: 'doughnut',
+    data: {
+        labels: aLabels,
+        datasets: [{ data: aData, backgroundColor: ['#4f7ef7','#3ecf8e','#3eb8d6','#f0a04b','#8b6cf7'], borderWidth: 0, hoverOffset: 6 }]
+    },
+    options: { cutout: '65%', plugins: { legend: { position: 'bottom', labels: { usePointStyle: true } } } }
+});
+new Chart(document.getElementById('liabPie').getContext('2d'), {
+    type: 'doughnut',
+    data: {
+        labels: lLabels,
+        datasets: [{ data: lData, backgroundColor: ['#e05c6c','#f0a04b'], borderWidth: 0, hoverOffset: 6 }]
+    },
+    options: { cutout: '65%', plugins: { legend: { position: 'bottom', labels: { usePointStyle: true } } } }
+});
+</script>
+{% endblock %}

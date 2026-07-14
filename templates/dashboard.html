@@ -1,0 +1,192 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard – Vyra{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Dashboard</h1>
+        <p class="page-subtitle">Your financial snapshot for this month</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{% url 'income_create' %}" class="neu-btn neu-btn-success"><i class="bi bi-plus-circle"></i> Income</a>
+        <a href="{% url 'expense_create' %}" class="neu-btn neu-btn-danger"><i class="bi bi-dash-circle"></i> Expense</a>
+    </div>
+</div>
+
+<!-- Stats Row -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon success"><i class="bi bi-arrow-down-circle-fill"></i></div>
+            <div class="stat-label">Total Income</div>
+            <div class="stat-value success">₹{{ total_income|floatformat:0|default:"0" }}</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon danger"><i class="bi bi-arrow-up-circle-fill"></i></div>
+            <div class="stat-label">Total Expenses</div>
+            <div class="stat-value danger">₹{{ total_expenses|floatformat:0|default:"0" }}</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon primary"><i class="bi bi-wallet-fill"></i></div>
+            <div class="stat-label">Balance</div>
+            <div class="stat-value primary">₹{{ balance|floatformat:0|default:"0" }}</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon purple"><i class="bi bi-piggy-bank-fill"></i></div>
+            <div class="stat-label">Savings</div>
+            <div class="stat-value purple">₹{{ balance|floatformat:0|default:"0" }}</div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row g-3 mb-4">
+    <div class="col-md-8">
+        <div class="chart-wrap h-100">
+            <div class="chart-title"><i class="bi bi-activity"></i> Income vs Expense Trend</div>
+            <canvas id="trendChart" height="90"></canvas>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="chart-wrap h-100">
+            <div class="chart-title"><i class="bi bi-pie-chart-fill"></i> Budget Usage</div>
+            <div class="d-flex justify-content-between mb-2">
+                <small style="color:var(--text-secondary);">₹{{ monthly_expenses|floatformat:0 }} spent</small>
+                <small style="color:var(--text-muted);">of ₹{{ monthly_budget|floatformat:0 }}</small>
+            </div>
+            <div class="neu-progress mb-4">
+                <div class="neu-progress-bar {% if budget_usage > 80 %}danger{% elif budget_usage > 50 %}warning{% else %}success{% endif %}" style="width: {{budget_usage|default:0 }}%;"></div>
+            </div>
+            <canvas id="budgetChart" height="170"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity + Quick Links -->
+<div class="row g-3">
+    <div class="col-md-7">
+        <div class="neu-table-wrap">
+            <div class="d-flex justify-content-between align-items-center px-4 py-3" style="border-bottom:1px solid var(--shadow-dark);">
+                <span class="fw-600" style="color:var(--text-primary);">Recent Activity</span>
+                <a href="{% url 'expense_list' %}" class="neu-btn neu-btn-sm"><i class="bi bi-list"></i> View All</a>
+            </div>
+            <table class="neu-table">
+                <tbody>
+                {% for item in recent_activity %}
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="stat-icon {% if item.type == 'income' %}success{% else %}danger{% endif %}" style="width:34px;height:34px;border-radius:9px;font-size:0.9rem;flex-shrink:0;">
+                                <i class="bi bi-{% if item.type == 'income' %}arrow-down{% else %}arrow-up{% endif %}"></i>
+                            </div>
+                            <div>
+                                <div class="fw-600" style="font-size:0.85rem;">{{ item.desc }}</div>
+                                <div style="font-size:0.75rem;color:var(--text-muted);">{{ item.date }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="text-end fw-700 {% if item.type == 'income' %}text-success-neu{% else %}text-danger-neu{% endif %}">
+                        {% if item.type == 'income' %}+{% else %}-{% endif %}₹{{ item.amount }}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="2" class="text-center py-4" style="color:var(--text-muted);">
+                    <i class="bi bi-inbox fs-2 d-block mb-2"></i>No activity yet. Start logging transactions!
+                </td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="col-md-5">
+        <!-- Quick Links Grid -->
+        <div class="row g-2 mb-3">
+            <div class="col-4">
+                <a href="{% url 'financial_hub' %}" class="quicklink" style="color:var(--primary)">
+                    <i class="bi bi-bank2"></i>
+                    <span>Hub</span>
+                </a>
+            </div>
+            <div class="col-4">
+                <a href="{% url 'savings_list' %}" class="quicklink" style="color:var(--success)">
+                    <i class="bi bi-piggy-bank"></i>
+                    <span>Savings</span>
+                </a>
+            </div>
+            <div class="col-4">
+                <a href="{% url 'investment_list' %}" class="quicklink" style="color:var(--info)">
+                    <i class="bi bi-bar-chart"></i>
+                    <span>Invest</span>
+                </a>
+            </div>
+            <div class="col-4">
+                <a href="{% url 'goal_list' %}" class="quicklink" style="color:var(--purple)">
+                    <i class="bi bi-trophy"></i>
+                    <span>Goals</span>
+                </a>
+            </div>
+            <div class="col-4">
+                <a href="{% url 'loan_list' %}" class="quicklink" style="color:var(--danger)">
+                    <i class="bi bi-cash-stack"></i>
+                    <span>Loans</span>
+                </a>
+            </div>
+            <div class="col-4">
+                <a href="{% url 'ai_advisor' %}" class="quicklink" style="color:var(--warning)">
+                    <i class="bi bi-stars"></i>
+                    <span>AI</span>
+                </a>
+            </div>
+        </div>
+        <!-- Mini AI Banner -->
+        <div class="insight-card" style="background:linear-gradient(135deg,var(--primary-light),var(--purple-light));">
+            <div class="insight-icon info"><i class="bi bi-stars"></i></div>
+            <div>
+                <div class="fw-600 mb-1" style="font-size:0.85rem;">AI Advisor Ready</div>
+                <div style="font-size:0.8rem;color:var(--text-secondary);">Get personalized insights based on your financial data.</div>
+                <a href="{% url 'ai_advisor' %}" class="neu-btn neu-btn-primary neu-btn-sm mt-2"><i class="bi bi-arrow-right"></i> View Insights</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+Chart.defaults.font.family = 'Inter, sans-serif';
+Chart.defaults.color = '#7a8fa6';
+
+const trendCtx = document.getElementById('trendChart').getContext('2d');
+new Chart(trendCtx, {
+    type: 'line',
+    data: {
+        labels: ['Jan','Feb','Mar','Apr','May','Jun'],
+        datasets: [
+            { label: 'Income', data: [0,0,0,0,0,{{ total_income|default:0 }}], borderColor: '#3ecf8e', backgroundColor: 'rgba(62,207,142,0.08)', tension: 0.4, fill: true, pointBackgroundColor: '#3ecf8e', pointRadius: 4 },
+            { label: 'Expense', data: [0,0,0,0,0,{{ total_expenses|default:0 }}], borderColor: '#e05c6c', backgroundColor: 'rgba(224,92,108,0.08)', tension: 0.4, fill: true, pointBackgroundColor: '#e05c6c', pointRadius: 4 }
+        ]
+    },
+    options: { plugins: { legend: { position: 'bottom', labels: { usePointStyle: true } } }, scales: { x: { grid: { display: false } }, y: { grid: { color: 'rgba(0,0,0,0.04)' } } } }
+});
+
+const budgetCtx = document.getElementById('budgetChart').getContext('2d');
+let used = {{ monthly_expenses|default:0 }};
+let remaining = Math.max({{ monthly_budget|default:0 }} - used, 0);
+new Chart(budgetCtx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Used', 'Remaining'],
+        datasets: [{ data: [used, remaining], backgroundColor: ['#e05c6c','#3ecf8e'], borderWidth: 0, hoverOffset: 6 }]
+    },
+    options: { cutout: '72%', plugins: { legend: { position: 'bottom', labels: { usePointStyle: true } } } }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Financial Report - {{ month_name }}</h2>
+    <button class="btn btn-primary" onclick="window.print()"><i class="bi bi-printer"></i> Print Report</button>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <h5 class="card-title">Total Income</h5>
+                <h3 class="card-text">₹ {{ total_income }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-danger text-white">
+            <div class="card-body">
+                <h5 class="card-title">Total Expenses</h5>
+                <h3 class="card-text">₹ {{ total_expense }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <h5 class="card-title">Net Savings</h5>
+                <h3 class="card-text">₹ {{ savings }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-secondary text-white">
+            <div class="card-body">
+                <h5 class="card-title">Avg Daily Spend</h5>
+                <h3 class="card-text">₹ {{ avg_daily }}</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card p-3 mb-4">
+            <h5>Expense Breakdown</h5>
+            <canvas id="categoryChart" height="200"></canvas>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card p-3 mb-4">
+            <h5>Insights Summary</h5>
+            <ul class="list-group list-group-flush mt-3">
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    Top Spending Category
+                    <span class="fw-bold">{{ top_category.category__category_name|default:"-" }} (₹{{ top_category.total|default:"0" }})</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    Highest Single Expense
+                    <span class="fw-bold text-danger">{% if highest_expense %}₹{{ highest_expense.amount }} ({{ highest_expense.description|default:highest_expense.category.category_name }}){% else %}-{% endif %}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    Lowest Single Expense
+                    <span class="fw-bold text-success">{% if lowest_expense %}₹{{ lowest_expense.amount }} ({{ lowest_expense.description|default:lowest_expense.category.category_name }}){% else %}-{% endif %}</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const ctx = document.getElementById('categoryChart').getContext('2d');
+    
+    const chartLabels = {{ chart_labels|safe }};
+    const chartData = {{ chart_data|safe }};
+    
+    // Generate distinct colors
+    const backgroundColors = [
+        '#0d6efd', '#6610f2', '#6f42c1', '#d63384', '#dc3545',
+        '#fd7e14', '#ffc107', '#198754', '#20c997', '#0dcaf0'
+    ];
+
+    new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: chartLabels,
+            datasets: [{
+                data: chartData,
+                backgroundColor: backgroundColors.slice(0, chartLabels.length)
+            }]
+        }
+    });
+</script>
+{% endblock %}
