@@ -56,6 +56,17 @@ INSTALLED_APPS = [
     'bills',
     'goals',
     'wealth',
+    # Platform Core apps
+    'currency',
+    'family',
+    'platform_settings',
+    'subscriptions',
+    'taxes',
+    'documents',
+    'gamification',
+    'journal',
+    'ai',
+    'backup',
 ]
 
 MIDDLEWARE = [
@@ -145,3 +156,36 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = 'login'
 LOGIN_URL = 'login'
+
+# ==============================================================================
+# MILITARY-GRADE SECURITY CONFIGURATION (AES-256 & Hardening)
+# ==============================================================================
+import base64
+
+# AES-256-GCM Encryption Key for Digital Vault Documents (32 bytes base64)
+# Used by documents.storage.AES256Storage
+AES_ENCRYPTION_KEY = 'Ik3rrsgX/M4It1SwV3UuCgKXdUN0QJmIYoVciMwnXb0='
+
+# Django Security Hardening (Enabled in production when DEBUG=False)
+if not DEBUG:
+    # 1. HTTP Strict Transport Security (HSTS)
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+
+    # 2. Redirect all HTTP traffic to HTTPS
+    SECURE_SSL_REDIRECT = True
+
+    # 3. Secure Cookies (Cannot be intercepted over plaintext HTTP)
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+
+# 4. Prevent Clickjacking
+X_FRAME_OPTIONS = 'DENY'
+
+# 5. Prevent MIME-sniffing
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# 6. Referrer Policy
+SECURE_REFERRER_POLICY = 'same-origin'
+

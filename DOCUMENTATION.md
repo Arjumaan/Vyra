@@ -1,72 +1,69 @@
-# Vyra - Smart Personal Expense Tracker
+# Vyra – Smart Personal Wealth Management Platform
 
-## Project Abstract
-Vyra is a web-based personal finance management application designed to help users track their income, monitor expenses, set budgets, and gain valuable financial insights. By leveraging interactive visualizations and an AI-inspired rule-based insight engine, it promotes financial awareness and smart money management.
+**Vyra** is a centralized, highly-extensible personal finance and wealth management operating system built with Django. It is designed for complete financial consolidation—tracking every aspect of a user's financial life, from daily expenses and income to long-term wealth building, investments, debt management, and AI-driven insights.
 
-## Problem Statement
-Many individuals struggle to keep track of their daily expenses and monthly budgets, leading to poor financial decisions and a lack of savings. Traditional methods of tracking expenses are tedious and lack actionable insights. Vyra solves this by providing a unified, automated, and intelligent platform for managing personal finances.
+## Project Scope & Architecture
 
-## Objectives
-- To develop a secure and user-friendly web application for personal finance management.
-- To provide categorized tracking of income and expenses.
-- To enable users to set and monitor monthly budgets.
-- To generate visual reports using Chart.js for better data comprehension.
-- To offer AI-powered financial insights and recommendations based on user spending habits.
+### Core Principles
+- **Monolithic Modularity:** Independent Django apps for distinct financial domains.
+- **Data Integrity:** Fully normalized SQLite/PostgreSQL schema (Foreign Keys, Indexes, Validators).
+- **No Duplication:** Single Source of Truth for transactions, assets, and liabilities.
+- **Personalized:** Designed as a single-user or family-scale OS, focusing on completeness and feature-richness over multi-tenant SaaS scaling.
 
-## Scope
-The system allows registered users to log their financial transactions, categorize their spending, view interactive dashboard summaries, set budgets, and read dynamically generated financial insights. The application is tailored for students, employees, and freelancers.
+### System Modules
 
-## Technology Stack
-- **Backend:** Python, Django 6.0
-- **Database:** SQLite3
-- **Frontend:** HTML5, CSS3, Bootstrap 5, Bootstrap Icons
-- **Visualizations:** Chart.js
+**1. Identity & Context**
+- **Financial Profile:** Comprehensive profile (income, dependents, risk appetite, goals) serving as the baseline for AI recommendations.
+- **Family Finance:** Relationship mapping, shared expenses, and split ownership.
+- **Settings & Personalization:** Theme management, currency preferences, and security configurations.
 
-## System Architecture
-The application follows the traditional Model-View-Template (MVT) architecture of Django. 
-- **Models:** Define the database schema (Income, Expense, Category, Budget).
-- **Views:** Handle the business logic and user requests.
-- **Templates:** Render the frontend using Bootstrap 5.
+**2. Core Finance & Banking**
+- **Multi-Currency Engine:** Live and manual exchange rates, multi-currency assets/reports.
+- **Bank & Cards:** Wallet, bank accounts, FD, RD, and credit cards.
+- **Cash Flow & Budget:** Advanced daily/weekly/rolling budgets, spending heatmaps, and AI-generated budget suggestions.
+- **Income & Expenses:** Daily transaction tracking with Receipt/OCR scanning support.
 
-## Database Schema (ER Diagram Logic)
-- **User:** Manages authentication.
-- **Income:** (id, user_id, amount, source, date, notes)
-- **Expense:** (id, user_id, category_id, amount, date, description)
-- **Category:** (id, user_id, category_name)
-- **Budget:** (id, user_id, monthly_budget, month, year)
+**3. Wealth & Asset Management**
+- **Complete Asset Tracker:** Property, vehicles, electronics, digital assets, business ownership.
+- **Investments:** Stocks, ETFs, Mutual Funds, Gold, Crypto.
+- **Portfolio Analytics:** Allocation charts (asset, sector, risk), diversification scoring, and performance tracking.
+- **Net Worth:** Real-time calculation and historical growth tracking.
 
-All modules (Income, Expense, Category, Budget) have a ForeignKey relationship with the User model to ensure data privacy and separation.
+**4. Liabilities & Commitments**
+- **Debt Management:** Personal loans, EMIs, BNPL, outstanding payments.
+- **Subscription Manager:** Tracking SaaS, streaming, and services with renewal reminders.
+- **Insurance Portfolio:** Health, life, vehicle, property tracking with claim and nominee details.
+- **Tax Center:** Income tax, GST, capital gains tracking, and yearly tax summaries.
 
-## Data Flow Diagram (DFD) - High Level
-1. User logs in/registers.
-2. User navigates to Dashboard to see summary.
-3. User adds Income/Expense -> Database updates.
-4. User sets Budget -> Database updates.
-5. System calculates totals, remaining budget, and savings -> Displayed on Dashboard and Reports.
-6. System analyzes data -> Generates AI Insights.
+**5. Planning & Forecasting**
+- **Advanced Goal Planner:** Progress tracking, forecast completion, required monthly savings.
+- **Retirement Planner:** Future value, inflation, and SIP calculators.
+- **Emergency Fund Calculator:** Expense-based readiness scoring.
+- **Expense Forecast:** ML-ready predictive cash flow analysis.
 
-## Features Implemented
-1. **Authentication:** Register, Login, Logout with secure password hashing.
-2. **Dashboard:** Summary of Total Income, Total Expenses, Balance, Savings, and Budget Usage.
-3. **Income Management:** CRUD operations for income records.
-4. **Expense Management:** CRUD operations for expenses with custom categories.
-5. **Budget Management:** Monthly budget tracking with progress indicators.
-6. **Reports:** Visual breakdown of expenses using Pie charts and summary statistics.
-7. **AI Insights:** Intelligent, rule-based alerts and tips on spending habits (e.g., budget exceeded warnings, top category alerts).
+**6. AI & Automation**
+- **AI Financial Coach:** Context-aware chat assistant utilizing user's financial data to answer questions and provide advice.
+- **AI Monthly Reports:** Automated executive summaries, predictions, and strategy suggestions.
+- **Document & Bill Scanners (OCR):** Auto-extraction of utility bills and receipts.
 
-## Future Enhancements
-- Integration with OpenAI/Gemini for advanced natural language insights.
-- Export reports to PDF/Excel.
-- Receipt scanner using OCR.
-- Multi-currency support.
+**7. Operations & Tools**
+- **Financial Calendar:** Unified view of salaries, EMIs, bills, dividends, and renewals.
+- **Notification Center:** Centralized alerts for budgets, loans, and goals.
+- **Financial Journal:** Daily notes, mood tracking, and event timelines.
+- **Document Vault:** Encrypted storage for PAN, Aadhaar, tax returns, and statements.
+- **Security & Backup:** Login history, 2FA, manual/scheduled JSON/CSV database backups.
+- **Reports Center:** PDF/Excel generation for income statements, cash flow, and tax reports.
 
-## User Manual
-1. Setup a virtual environment: `python -m venv venv`
-2. Activate it and install Django: `pip install django`
-3. Run migrations: `python manage.py migrate`
-4. Create a superuser: `python manage.py createsuperuser`
-5. Run the server: `python manage.py runserver`
-6. Access the app at `http://127.0.0.1:8000/`
+## Tech Stack
+- **Backend:** Python, Django 6.x
+- **Frontend:** HTML5, CSS3 (Neumorphic Design System), Vanilla JS, Chart.js
+- **Database:** SQLite (Dev) / PostgreSQL (Prod ready)
+- **Deployment & DevOps:** Local environment optimized, ready for self-hosting.
+
+## Coding Standards
+- Strict PEP 8 compliance.
+- Business logic encapsulated in `services.py` for complex apps.
+- Comprehensive UI accessibility (Keyboard navigation, screen reader labels, high contrast support).
 
 ---
-*Developed as a college mini-project demonstrating modern web development practices.*
+*Vyra is developed as the ultimate personal finance ecosystem, engineered for lifelong financial clarity and control.*

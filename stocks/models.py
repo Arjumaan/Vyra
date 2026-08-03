@@ -12,6 +12,11 @@ class Stock(models.Model):
     buy_price = models.DecimalField(max_digits=12, decimal_places=2)
     current_price = models.DecimalField(max_digits=12, decimal_places=2)
     purchase_date = models.DateField(default=datetime.date.today)
+    
+    # New analytics fields
+    sector = models.CharField(max_length=100, blank=True, null=True, help_text="e.g., Technology, Finance, Energy")
+    market_cap_category = models.CharField(max_length=20, choices=[('Large', 'Large Cap'), ('Mid', 'Mid Cap'), ('Small', 'Small Cap')], blank=True, null=True)
+    
     notes = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 

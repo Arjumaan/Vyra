@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}Notifications – Vyra{% endblock %}
+
+{% block content %}
+<div class="page-header mb-4">
+    <div>
+        <h1 class="page-title"><i class="bi bi-bell" style="color:var(--primary)"></i> Notifications</h1>
+        <p class="page-subtitle">Your alerts and system messages</p>
+    </div>
+    {% if unread_count > 0 %}
+    <div>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" name="mark_all_read" class="neu-btn neu-btn-primary"><i class="bi bi-check-all"></i> Mark All Read</button>
+        </form>
+    </div>
+    {% endif %}
+</div>
+
+<div class="row g-4">
+    <div class="col-md-8 mx-auto">
+        <div class="neu-card p-4">
+            <div class="d-flex flex-column gap-3">
+                {% for n in notifications %}
+                <div class="p-3" style="background:var(--surface); border-radius:var(--radius-md); border-left: 4px solid {% if not n.is_read %}var(--primary){% else %}transparent{% endif %}; border:1px solid rgba(190,200,213,0.3);">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="fw-bold" style="color:var(--text-primary);">
+                            {% if n.notification_type == 'budget' %}<i class="bi bi-pie-chart text-warning"></i>
+                            {% elif n.notification_type == 'bill' %}<i class="bi bi-receipt text-danger"></i>
+                            {% elif n.notification_type == 'investment' %}<i class="bi bi-graph-up-arrow text-success"></i>
+                            {% elif n.notification_type == 'security' %}<i class="bi bi-shield-exclamation text-danger"></i>
+                            {% else %}<i class="bi bi-info-circle text-info"></i>{% endif %}
+                            {{ n.title }}
+                        </span>
+                        <span style="font-size:0.75rem; color:var(--text-muted);">{{ n.created_at|timesince }} ago</span>
+                    </div>
+                    <p style="font-size:0.9rem; color:var(--text-secondary); margin:0;">{{ n.message }}</p>
+                </div>
+                {% empty %}
+                <div class="text-center py-5 text-muted">
+                    <div style="font-size:3rem; margin-bottom:1rem; opacity:0.5;"><i class="bi bi-bell-slash"></i></div>
+                    <h5>All caught up!</h5>
+                    <p>No new notifications at this time.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -10,6 +10,11 @@ class CryptoHolding(models.Model):
     buy_price = models.DecimalField(max_digits=14, decimal_places=2)
     current_price = models.DecimalField(max_digits=14, decimal_places=2)
     purchase_date = models.DateField(default=datetime.date.today)
+    
+    # New analytics fields
+    category = models.CharField(max_length=50, blank=True, null=True, help_text="e.g., Layer 1, DeFi, Meme")
+    risk_level = models.CharField(max_length=20, choices=[('Medium', 'Medium'), ('High', 'High'), ('Extreme', 'Extreme')], default='High')
+    
     notes = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 

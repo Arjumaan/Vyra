@@ -16,6 +16,12 @@ class FinancialGoal(models.Model):
     target_amount = models.DecimalField(max_digits=14, decimal_places=2)
     current_amount = models.DecimalField(max_digits=14, decimal_places=2, default=0)
     deadline = models.DateField()
+    
+    # Advanced Forecasting Fields
+    expected_inflation_rate = models.DecimalField(max_digits=5, decimal_places=2, default=6.0, help_text="Annual inflation %")
+    expected_return_rate = models.DecimalField(max_digits=5, decimal_places=2, default=10.0, help_text="Expected annual return on investments %")
+    
+    notes = models.TextField(blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -32,4 +38,16 @@ class FinancialGoal(models.Model):
 
     def days_remaining(self):
         delta = self.deadline - datetime.date.today()
-        return delta.days
+        return max(delta.days, 0)
+        
+    @property
+    def months_remaining(self):
+        days = self.days_remaining()
+        return max(days // 30, 1) # At least 1 month to avoid division by zero
+        
+    @property
+    def required_monthly_savings(self):
+        # A simplified required monthly savings without complex compound interest
+        # Real implementation would use PMT formula considering expected_return_rate
+        return round(self.remaining_amount() / self.months_remaining, 2)
+

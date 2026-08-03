@@ -2,96 +2,76 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from income.models import Income
 from expenses.models import Expense
-from budget.models import Budget
-from django.db.models import Sum
-from datetime import datetime
+from django.db.models import Sum, Count
+import datetime
+from dateutil.relativedelta import relativedelta
+from wealth.views import _get_wealth_data
 
 @login_required
 def insights_view(request):
     user = request.user
-    today = datetime.now().date()
+    today = datetime.date.today()
     
-    # Current Month Data
+    # Base wealth data for overview metrics
+    wealth_data = _get_wealth_data(user)
+    
+    # 6-Month Cash Flow Analysis
+    cashflow_labels = []
+    cashflow_income = []
+    cashflow_expense = []
+    
+    for i in range(5, -1, -1):
+        target_date = today - relativedelta(months=i)
+        month_name = target_date.strftime("%b %Y")
+        
+        inc = Income.objects.filter(user=user, date__month=target_date.month, date__year=target_date.year).aggregate(Sum('amount'))['amount__sum'] or 0
+        exp = Expense.objects.filter(user=user, date__month=target_date.month, date__year=target_date.year).aggregate(Sum('amount'))['amount__sum'] or 0
+        
+        cashflow_labels.append(month_name)
+        cashflow_income.append(float(inc))
+        cashflow_expense.append(float(exp))
+        
+    # Current Month Category Heatmap
     this_month_expenses = Expense.objects.filter(user=user, date__month=today.month, date__year=today.year)
-    this_month_income = Income.objects.filter(user=user, date__month=today.month, date__year=today.year)
-    budget = Budget.objects.filter(user=user, month=today.month, year=today.year).first()
+    category_expenses = this_month_expenses.values('category__category_name').annotate(total=Sum('amount')).order_by('-total')[:6]
     
-    total_expense = this_month_expenses.aggregate(Sum('amount'))['amount__sum'] or 0
-    total_income = this_month_income.aggregate(Sum('amount'))['amount__sum'] or 0
-    monthly_budget = budget.monthly_budget if budget else 0
-    
-    insights = []
-    
-    if total_expense == 0 and total_income == 0:
-        insights.append({
-            'type': 'info',
-            'icon': 'bi-info-circle',
-            'text': "Welcome to Vyra! Start logging your transactions to get personalized financial insights."
-        })
-        return render(request, 'insights/insights.html', {'insights': insights})
-    
-    # Insight 1: Income vs Expense
-    if total_expense > total_income > 0:
-        insights.append({
-            'type': 'danger',
-            'icon': 'bi-exclamation-triangle',
-            'text': f"Warning: Your expenses (₹{total_expense}) have exceeded your income (₹{total_income}) this month."
-        })
-    elif total_income > total_expense * 2:
-        insights.append({
-            'type': 'success',
-            'icon': 'bi-check-circle',
-            'text': "Excellent! You are maintaining healthy savings. Your income comfortably covers your monthly expenses."
-        })
-    
-    # Insight 2: Budget Usage
-    if monthly_budget > 0:
-        usage = (total_expense / monthly_budget) * 100
-        if usage > 100:
-            insights.append({
-                'type': 'danger',
-                'icon': 'bi-exclamation-octagon',
-                'text': f"Critical: You have exceeded your monthly budget by {usage - 100:.1f}%. Try to cut down unnecessary spending."
+    heatmap_labels = []
+    heatmap_data = []
+    for c in category_expenses:
+        name = c['category__category_name'] or 'Uncategorized'
+        heatmap_labels.append(name)
+        heatmap_data.append(float(c['total']))
+        
+    # Frequent Expenses (Count based)
+    frequent_expenses = this_month_expenses.values('description').annotate(count=Count('id'), total=Sum('amount')).order_by('-count')[:5]
+    freq_list = []
+    for f in frequent_expenses:
+        if f['description']:
+            freq_list.append({
+                'name': f['description'],
+                'count': f['count'],
+                'total': float(f['total'])
             })
-        elif usage > 80:
-            insights.append({
-                'type': 'warning',
-                'icon': 'bi-exclamation-circle',
-                'text': f"Alert: You have used {usage:.1f}% of your budget. Only ₹{monthly_budget - total_expense} remaining."
-            })
-        elif usage < 50:
-            insights.append({
-                'type': 'success',
-                'icon': 'bi-hand-thumbs-up',
-                'text': f"Great job! You have only used {usage:.1f}% of your budget so far."
-            })
+            
+    # Key Metrics
+    total_income_6m = sum(cashflow_income)
+    total_expense_6m = sum(cashflow_expense)
+    savings_rate_6m = 0
+    if total_income_6m > 0:
+        savings_rate_6m = ((total_income_6m - total_expense_6m) / total_income_6m) * 100
 
-    # Insight 3: Category Spending
-    category_expenses = this_month_expenses.values('category__category_name').annotate(total=Sum('amount')).order_by('-total')
-    if category_expenses:
-        top_cat = category_expenses[0]
-        cat_name = top_cat['category__category_name'] or 'Uncategorized'
-        cat_total = top_cat['total']
-        if total_expense > 0:
-            cat_percent = (cat_total / total_expense) * 100
-            if cat_percent > 30:
-                insights.append({
-                    'type': 'warning',
-                    'icon': 'bi-pie-chart',
-                    'text': f"You spent {cat_percent:.1f}% of your total expenses (₹{cat_total}) on {cat_name}. Consider reducing this to save more."
-                })
-            else:
-                insights.append({
-                    'type': 'info',
-                    'icon': 'bi-pie-chart',
-                    'text': f"Your highest expense category is {cat_name} at ₹{cat_total} ({cat_percent:.1f}% of total)."
-                })
-                
-    # Insight 4: General Tips
-    insights.append({
-        'type': 'primary',
-        'icon': 'bi-lightbulb',
-        'text': "AI Tip: Try applying the 50/30/20 rule - 50% for needs, 30% for wants, and 20% for savings."
-    })
-
-    return render(request, 'insights/insights.html', {'insights': insights})
+    context = {
+        'net_worth': wealth_data['net_worth'],
+        'health_score': wealth_data['health_score'],
+        'cashflow_labels': cashflow_labels,
+        'cashflow_income': cashflow_income,
+        'cashflow_expense': cashflow_expense,
+        'heatmap_labels': heatmap_labels,
+        'heatmap_data': heatmap_data,
+        'freq_list': freq_list,
+        'total_income_6m': total_income_6m,
+        'total_expense_6m': total_expense_6m,
+        'savings_rate_6m': round(savings_rate_6m, 1)
+    }
+    
+    return render(request, 'insights/insights.html', context)

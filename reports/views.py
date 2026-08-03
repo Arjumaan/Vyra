@@ -4,6 +4,8 @@ from income.models import Income
 from expenses.models import Expense
 from django.db.models import Sum
 from datetime import datetime, timedelta
+import csv
+from django.http import HttpResponse
 
 @login_required
 def reports_view(request):
@@ -45,3 +47,44 @@ def reports_view(request):
         'month_name': today.strftime('%B %Y')
     }
     return render(request, 'reports/reports.html', context)
+
+@login_required
+def export_csv(request):
+    user = request.user
+    export_type = request.GET.get('type', 'transactions') # 'transactions', 'income', 'expenses'
+    
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="vyra_{export_type}_{datetime.now().strftime("%Y%m%d")}.csv"'
+    
+    writer = csv.writer(response)
+    
+    if export_type == 'income':
+        writer.writerow(['Date', 'Source', 'Amount', 'Description'])
+        incomes = Income.objects.filter(user=user).order_by('-date')
+        for i in incomes:
+            writer.writerow([i.date, i.source, i.amount, i.description])
+            
+    elif export_type == 'expenses':
+        writer.writerow(['Date', 'Category', 'Amount', 'Description', 'Merchant'])
+        expenses = Expense.objects.filter(user=user).order_by('-date')
+        for e in expenses:
+            category_name = e.category.category_name if e.category else 'Uncategorized'
+            writer.writerow([e.date, category_name, e.amount, e.description, e.merchant])
+            
+    else: # Mixed Transactions
+        writer.writerow(['Date', 'Type', 'Category/Source', 'Amount', 'Description'])
+        incomes = Income.objects.filter(user=user)
+        expenses = Expense.objects.filter(user=user)
+        
+        transactions = []
+        for i in incomes:
+            transactions.append({'date': i.date, 'type': 'Income', 'cat': i.source, 'amt': i.amount, 'desc': i.description})
+        for e in expenses:
+            cat = e.category.category_name if e.category else 'Uncategorized'
+            transactions.append({'date': e.date, 'type': 'Expense', 'cat': cat, 'amt': e.amount, 'desc': e.description})
+            
+        transactions.sort(key=lambda x: x['date'], reverse=True)
+        for t in transactions:
+            writer.writerow([t['date'], t['type'], t['cat'], t['amt'], t['desc']])
+            
+    return response

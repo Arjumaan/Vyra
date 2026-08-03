@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% block title %}Lifestyle & Journal – Vyra{% endblock %}
+
+{% block content %}
+<div class="page-header mb-4">
+    <div>
+        <h1 class="page-title"><i class="bi bi-book" style="color:var(--primary)"></i> Lifestyle & Journal</h1>
+        <p class="page-subtitle">Reflect on your habits and manage your financial wishlist</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{% url 'journal_add' %}" class="neu-btn neu-btn-primary"><i class="bi bi-pen"></i> New Entry</a>
+        <a href="{% url 'wishlist_add' %}" class="neu-btn"><i class="bi bi-cart-plus"></i> Add to Wishlist</a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Wishlist -->
+    <div class="col-lg-7">
+        <div class="neu-card h-100">
+            <div class="neu-card-body">
+                <h5 class="fw-600 mb-3"><i class="bi bi-stars" style="color:var(--warning)"></i> Purchasing Wishlist</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr style="border-bottom: 1px solid rgba(190,200,213,0.3); font-size:0.85rem; color:var(--text-muted); text-transform:uppercase;">
+                                <th>Item</th>
+                                <th>Priority</th>
+                                <th>Est. Cost</th>
+                                <th>Status</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in wishlist %}
+                            <tr style="border-bottom: 1px solid rgba(190,200,213,0.1);">
+                                <td>
+                                    <div class="fw-600" style="color:var(--text-primary);">
+                                        {% if item.product_url %}
+                                        <a href="{{ item.product_url }}" target="_blank" style="color:inherit; text-decoration:none;">{{ item.item_name }} <i class="bi bi-box-arrow-up-right" style="font-size:0.75rem;"></i></a>
+                                        {% else %}
+                                        {{ item.item_name }}
+                                        {% endif %}
+                                    </div>
+                                    <div style="font-size:0.8rem; color:var(--text-muted);">{{ item.target_date|default:"No timeline" }}</div>
+                                </td>
+                                <td>
+                                    {% if item.priority == 'high' %}
+                                    <span class="neu-badge danger">High</span>
+                                    {% elif item.priority == 'medium' %}
+                                    <span class="neu-badge warning">Medium</span>
+                                    {% else %}
+                                    <span class="neu-badge info">Low</span>
+                                    {% endif %}
+                                </td>
+                                <td class="fw-600">₹{{ item.estimated_cost|floatformat:0 }}</td>
+                                <td><span class="neu-badge">{{ item.get_status_display }}</span></td>
+                                <td class="text-end">
+                                    <a href="{% url 'wishlist_edit' item.pk %}" class="neu-btn neu-btn-sm"><i class="bi bi-pencil"></i></a>
+                                    <form method="post" action="{% url 'wishlist_delete' item.pk %}" style="display:inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="neu-btn neu-btn-sm" style="color:var(--danger);"><i class="bi bi-trash"></i></button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="5" class="text-center py-4 text-muted">Wishlist is empty. Avoid impulse buying by adding items here first!</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Journal Entries -->
+    <div class="col-lg-5">
+        <div class="neu-card h-100">
+            <div class="neu-card-body">
+                <h5 class="fw-600 mb-3"><i class="bi bi-journal-text"></i> Financial Diary</h5>
+                <div class="d-flex flex-column gap-3">
+                    {% for entry in entries %}
+                    <div style="background:var(--surface); border:1px solid rgba(190,200,213,0.3); padding:1rem; border-radius:var(--radius-md);">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fw-600" style="color:var(--text-primary);">{{ entry.date|date:"M d, Y" }}</span>
+                            <span class="neu-badge {% if entry.mood_score >= 7 %}success{% elif entry.mood_score <= 4 %}danger{% else %}warning{% endif %}">Mood: {{ entry.mood_score }}/10</span>
+                        </div>
+                        {% if entry.tags %}
+                        <div style="font-size:0.75rem; color:var(--primary); margin-bottom:0.5rem; font-weight:600;">
+                            {% for tag in entry.tags.split %}
+                            #{{ tag }} 
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        <p style="font-size:0.9rem; color:var(--text-secondary); margin:0;">
+                            {{ entry.notes|linebreaksbr }}
+                        </p>
+                    </div>
+                    {% empty %}
+                    <div class="text-center py-4 text-muted">No journal entries yet. Start tracking your spending psychology.</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

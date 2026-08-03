@@ -30,3 +30,24 @@ class Insurance(models.Model):
     def days_to_renewal(self):
         delta = self.renewal_date - datetime.date.today()
         return delta.days
+
+class Claim(models.Model):
+    STATUS_CHOICES = [
+        ('submitted', 'Submitted'),
+        ('processing', 'Processing'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+    ]
+
+    insurance = models.ForeignKey(Insurance, on_delete=models.CASCADE, related_name='claims')
+    claim_amount = models.DecimalField(max_digits=12, decimal_places=2)
+    settlement_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    incident_date = models.DateField()
+    claim_date = models.DateField(default=datetime.date.today)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='submitted')
+    description = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Claim for {self.insurance.policy_name} - {self.status}"
+

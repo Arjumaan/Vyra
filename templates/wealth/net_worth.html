@@ -37,6 +37,10 @@
                     <span style="color:var(--text-secondary);">Crypto</span>
                     <span class="fw-600">₹{{ crypto_value|floatformat:2 }}</span>
                 </div>
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                    <span style="color:var(--text-secondary);">Properties & Assets</span>
+                    <span class="fw-600">₹{{ property_value|floatformat:2 }}</span>
+                </div>
                 <div class="d-flex justify-content-between py-3 mt-2" style="background:var(--success-light);border-radius:var(--radius-sm);padding:0 1rem;">
                     <span class="fw-700 text-success-neu">Total Assets</span>
                     <span class="fw-700 text-success-neu">₹{{ total_assets|floatformat:2 }}</span>

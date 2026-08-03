@@ -11,6 +11,7 @@ from bills.models import Bill
 from goals.models import FinancialGoal
 from income.models import Income
 from expenses.models import Expense
+from wealth.models import Asset
 from django.db.models import Sum
 import datetime
 
@@ -22,7 +23,8 @@ def _get_wealth_data(user):
     investment_value = sum(float(i.current_value) for i in Investment.objects.filter(user=user))
     stock_value = sum(s.current_value() for s in Stock.objects.filter(user=user))
     crypto_value = sum(c.current_value() for c in CryptoHolding.objects.filter(user=user))
-    total_assets = float(bank_balance) + float(savings_balance) + investment_value + stock_value + crypto_value
+    property_value = float(Asset.objects.filter(user=user).aggregate(Sum('current_value'))['current_value__sum'] or 0)
+    total_assets = float(bank_balance) + float(savings_balance) + investment_value + stock_value + crypto_value + property_value
 
     # Liabilities
     total_loans = float(Loan.objects.filter(user=user).aggregate(Sum('outstanding_balance'))['outstanding_balance__sum'] or 0)
@@ -51,8 +53,8 @@ def _get_wealth_data(user):
     score = min(max(score, 0), 100)
 
     # Breakdowns for charts
-    asset_labels = ['Bank Balance', 'Savings', 'Investments', 'Stocks', 'Crypto']
-    asset_data = [float(bank_balance), float(savings_balance), investment_value, stock_value, crypto_value]
+    asset_labels = ['Bank Balance', 'Savings', 'Investments', 'Stocks', 'Crypto', 'Properties & Assets']
+    asset_data = [float(bank_balance), float(savings_balance), investment_value, stock_value, crypto_value, property_value]
 
     liability_labels = ['Outstanding Loans', 'Credit Card Used']
     liability_data = [total_loans, total_credit_used]
@@ -66,6 +68,7 @@ def _get_wealth_data(user):
         'investment_value': round(investment_value, 2),
         'stock_value': round(stock_value, 2),
         'crypto_value': round(crypto_value, 2),
+        'property_value': round(property_value, 2),
         'total_loans': round(total_loans, 2),
         'total_credit_used': round(total_credit_used, 2),
         'monthly_emi': round(monthly_emi, 2),
@@ -172,3 +175,56 @@ def ai_advisor(request):
 
     data.update({'insights': insights})
     return render(request, 'wealth/ai_advisor.html', data)
+
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse_lazy
+from .models import Asset
+from .forms import AssetForm
+
+class AssetListView(LoginRequiredMixin, ListView):
+    model = Asset
+    template_name = 'wealth/asset_list.html'
+    context_object_name = 'assets'
+    def get_queryset(self):
+        return Asset.objects.filter(user=self.request.user).order_by('-current_value')
+
+class AssetCreateView(LoginRequiredMixin, CreateView):
+    model = Asset
+    form_class = AssetForm
+    template_name = '_generic_form.html'
+    success_url = reverse_lazy('asset_list')
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['title'] = 'Add New Asset'
+        ctx['back_url'] = 'asset_list'
+        return ctx
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
+class AssetUpdateView(LoginRequiredMixin, UpdateView):
+    model = Asset
+    form_class = AssetForm
+    template_name = '_generic_form.html'
+    success_url = reverse_lazy('asset_list')
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['title'] = 'Edit Asset'
+        ctx['back_url'] = 'asset_list'
+        return ctx
+    def get_queryset(self):
+        return Asset.objects.filter(user=self.request.user)
+
+class AssetDeleteView(LoginRequiredMixin, DeleteView):
+    model = Asset
+    template_name = '_generic_confirm_delete.html'
+    success_url = reverse_lazy('asset_list')
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['title'] = 'Delete Asset'
+        ctx['back_url'] = 'asset_list'
+        return ctx
+    def get_queryset(self):
+        return Asset.objects.filter(user=self.request.user)
+

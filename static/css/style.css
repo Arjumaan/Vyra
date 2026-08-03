@@ -703,3 +703,26 @@ input[type="checkbox"] {
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: var(--shadow-dark); border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background: #9baabb; }
+
+[data-theme="dark"] {
+  --bg: #1c2128;
+  --surface: #1c2128;
+  --shadow-dark: #12151a;
+  --shadow-light: #262d36;
+  --primary: #5c8bff;
+  --primary-light: rgba(92, 139, 255, 0.15);
+  --success: #47ebaa;
+  --success-light: rgba(71, 235, 170, 0.15);
+  --danger: #ff6b7e;
+  --danger-light: rgba(255, 107, 126, 0.15);
+  --warning: #ffb05c;
+  --warning-light: rgba(255, 176, 92, 0.15);
+  --info: #4cc7e6;
+  --info-light: rgba(76, 199, 230, 0.15);
+  --purple: #9c7eff;
+  --purple-light: rgba(156, 126, 255, 0.15);
+  --text-primary: #e6edf3;
+  --text-secondary: #9aa6b6;
+  --text-muted: #707b8b;
+}
+

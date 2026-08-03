@@ -7,6 +7,7 @@ class Loan(models.Model):
         ('home', 'Home Loan'), ('vehicle', 'Vehicle Loan'),
         ('education', 'Education Loan'), ('gold', 'Gold Loan'),
         ('personal', 'Personal Loan'), ('business', 'Business Loan'),
+        ('bnpl', 'Buy Now Pay Later'), ('cc_emi', 'Credit Card EMI'),
         ('other', 'Other'),
     ]
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -31,3 +32,19 @@ class Loan(models.Model):
             paid = float(self.loan_amount) - float(self.outstanding_balance)
             return round((paid / float(self.loan_amount)) * 100, 1)
         return 0
+
+class LoanPayment(models.Model):
+    loan = models.ForeignKey(Loan, on_delete=models.CASCADE, related_name='payments')
+    amount_paid = models.DecimalField(max_digits=12, decimal_places=2)
+    payment_date = models.DateField(default=datetime.date.today)
+    principal_component = models.DecimalField(max_digits=12, decimal_places=2, default=0, help_text="Amount going towards principal")
+    interest_component = models.DecimalField(max_digits=12, decimal_places=2, default=0, help_text="Amount going towards interest")
+    notes = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-payment_date']
+
+    def __str__(self):
+        return f"{self.loan.loan_name} - {self.amount_paid} on {self.payment_date}"
+

@@ -1,6 +1,9 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" 
+    {% if user.is_authenticated and user.platform_settings.theme != 'system' %}data-theme="{{ user.platform_settings.theme }}"{% endif %}
+    {% if user.is_authenticated %}data-theme-setting="{{ user.platform_settings.theme }}"{% else %}data-theme-setting="system"{% endif %}
+>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +14,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script>
+        var themeSetting = document.documentElement.getAttribute('data-theme-setting');
+        if (themeSetting === 'system' || !themeSetting) {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        }
+    </script>
     {% block head %}{% endblock %}
 </head>
 <body>
@@ -30,6 +41,7 @@
             <a href="{% url 'dashboard' %}" class="{% if request.path == '/' %}active{% endif %}"><i class="bi bi-speedometer2"></i> Dashboard</a>
             <a href="{% url 'financial_hub' %}" class="{% if 'wealth' in request.path and 'networth' not in request.path and 'advisor' not in request.path %}active{% endif %}"><i class="bi bi-bank2"></i> Financial Hub</a>
             <a href="{% url 'net_worth' %}" class="{% if 'networth' in request.path %}active{% endif %}"><i class="bi bi-graph-up-arrow"></i> Net Worth</a>
+            <a href="{% url 'asset_list' %}" class="{% if 'assets' in request.path %}active{% endif %}"><i class="bi bi-houses"></i> Property & Assets</a>
 
             <hr class="sidebar-divider">
 
@@ -37,6 +49,7 @@
             <div class="sidebar-section">Tracking</div>
             <a href="{% url 'income_list' %}" class="{% if 'income' in request.path %}active{% endif %}"><i class="bi bi-arrow-down-circle"></i> Income</a>
             <a href="{% url 'expense_list' %}" class="{% if 'expenses' in request.path and 'categories' not in request.path %}active{% endif %}"><i class="bi bi-arrow-up-circle"></i> Expenses</a>
+            <a href="{% url 'subscription_list' %}" class="{% if 'subscriptions' in request.path %}active{% endif %}"><i class="bi bi-arrow-repeat"></i> Subscriptions</a>
             <a href="{% url 'category_list' %}" class="{% if 'categories' in request.path %}active{% endif %}"><i class="bi bi-tags"></i> Categories</a>
             <a href="{% url 'budget_list' %}" class="{% if 'budget' in request.path %}active{% endif %}"><i class="bi bi-pie-chart-fill"></i> Budget</a>
             <a href="{% url 'bill_list' %}" class="{% if 'bills' in request.path %}active{% endif %}"><i class="bi bi-receipt"></i> Bills</a>
@@ -60,17 +73,26 @@
             <hr class="sidebar-divider">
 
             <!-- Planning -->
-            <div class="sidebar-section">Planning</div>
+            <div class="sidebar-section">Planning & Vault</div>
+            <a href="{% url 'document_list' %}" class="{% if 'vault' in request.path %}active{% endif %}"><i class="bi bi-shield-lock"></i> Digital Vault</a>
+            <a href="{% url 'tax_list' %}" class="{% if 'taxes' in request.path %}active{% endif %}"><i class="bi bi-bank"></i> Taxes</a>
             <a href="{% url 'goal_list' %}" class="{% if 'goals' in request.path %}active{% endif %}"><i class="bi bi-trophy"></i> Goals</a>
+            <a href="{% url 'journal_list' %}" class="{% if 'journal' in request.path %}active{% endif %}"><i class="bi bi-book"></i> Journal & Wishlist</a>
             <a href="{% url 'insurance_list' %}" class="{% if 'insurance' in request.path %}active{% endif %}"><i class="bi bi-shield-check"></i> Insurance</a>
             <a href="{% url 'reports' %}" class="{% if 'reports' in request.path %}active{% endif %}"><i class="bi bi-bar-chart-line"></i> Reports</a>
 
             <hr class="sidebar-divider">
 
             <!-- AI -->
-            <div class="sidebar-section">AI</div>
-            <a href="{% url 'ai_advisor' %}" class="{% if 'advisor' in request.path %}active{% endif %}"><i class="bi bi-stars"></i> AI Advisor</a>
-            <a href="{% url 'insights' %}" class="{% if 'insights' in request.path %}active{% endif %}"><i class="bi bi-lightbulb"></i> Insights</a>
+            <div class="sidebar-section">Intelligence & System</div>
+            <a href="{% url 'ai_chat' %}" class="{% if 'ai' in request.path %}active{% endif %}"><i class="bi bi-robot"></i> AI Coach</a>
+            <a href="{% url 'insights' %}" class="{% if 'insights' in request.path %}active{% endif %}"><i class="bi bi-bar-chart-line-fill"></i> Analytics Dashboard</a>
+            <a href="{% url 'gamification_view' %}" class="{% if 'gamification' in request.path %}active{% endif %}"><i class="bi bi-trophy" style="color:var(--warning)"></i> Achievements</a>
+            <a href="{% url 'notifications_view' %}" class="{% if 'notifications' in request.path %}active{% endif %}"><i class="bi bi-bell"></i> Notifications</a>
+            <a href="{% url 'settings_view' %}" class="{% if 'settings' in request.path %}active{% endif %}"><i class="bi bi-gear"></i> Settings</a>
+            {% if request.user.is_superuser %}
+            <a href="{% url 'security_center' %}" class="{% if 'security' in request.path %}active{% endif %}"><i class="bi bi-shield-check" style="color:var(--success)"></i> Security & Backups</a>
+            {% endif %}
 
             <hr class="sidebar-divider">
             <form method="post" action="{% url 'logout' %}">{% csrf_token %}
@@ -92,7 +114,7 @@
             </div>
             <div class="d-flex align-items-center gap-2">
                 <a href="{% url 'financial_hub' %}" class="neu-btn neu-btn-sm d-none d-md-inline-flex"><i class="bi bi-bank2"></i> Financial Hub</a>
-                <a href="{% url 'ai_advisor' %}" class="neu-btn neu-btn-primary neu-btn-sm"><i class="bi bi-stars"></i> AI Advisor</a>
+                <a href="{% url 'ai_chat' %}" class="neu-btn neu-btn-primary neu-btn-sm"><i class="bi bi-robot"></i> AI Coach</a>
                 <!-- Mobile menu toggle -->
                 <button class="neu-btn-icon d-md-none" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar"><i class="bi bi-list fs-5"></i></button>
             </div>
@@ -125,11 +147,22 @@
         <nav class="py-2">
             <a href="{% url 'dashboard' %}" class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none" style="color:var(--text-secondary)"><i class="bi bi-speedometer2"></i> Dashboard</a>
             <a href="{% url 'financial_hub' %}" class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none" style="color:var(--text-secondary)"><i class="bi bi-bank2"></i> Financial Hub</a>
+            <a href="{% url 'asset_list' %}" class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none" style="color:var(--text-secondary)"><i class="bi bi-houses"></i> Assets</a>
             <a href="{% url 'income_list' %}" class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none" style="color:var(--text-secondary)"><i class="bi bi-arrow-down-circle"></i> Income</a>
             <a href="{% url 'expense_list' %}" class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none" style="color:var(--text-secondary)"><i class="bi bi-arrow-up-circle"></i> Expenses</a>
+            <a href="{% url 'subscription_list' %}" class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none" style="color:var(--text-secondary)"><i class="bi bi-arrow-repeat"></i> Subscriptions</a>
             <a href="{% url 'savings_list' %}" class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none" style="color:var(--text-secondary)"><i class="bi bi-piggy-bank"></i> Savings</a>
+            <a href="{% url 'document_list' %}" class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none" style="color:var(--text-secondary)"><i class="bi bi-shield-lock"></i> Digital Vault</a>
+            <a href="{% url 'tax_list' %}" class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none" style="color:var(--text-secondary)"><i class="bi bi-bank"></i> Taxes</a>
             <a href="{% url 'goal_list' %}" class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none" style="color:var(--text-secondary)"><i class="bi bi-trophy"></i> Goals</a>
-            <a href="{% url 'ai_advisor' %}" class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none" style="color:var(--primary)"><i class="bi bi-stars"></i> AI Advisor</a>
+            <a href="{% url 'journal_list' %}" class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none" style="color:var(--text-secondary)"><i class="bi bi-book"></i> Journal</a>
+            <a href="{% url 'ai_chat' %}" class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none" style="color:var(--primary)"><i class="bi bi-robot"></i> AI Coach</a>
+            <a href="{% url 'gamification_view' %}" class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none" style="color:var(--warning)"><i class="bi bi-trophy-fill"></i> Achievements</a>
+            <a href="{% url 'notifications_view' %}" class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none" style="color:var(--text-secondary)"><i class="bi bi-bell"></i> Notifications</a>
+            <a href="{% url 'settings_view' %}" class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none" style="color:var(--text-secondary)"><i class="bi bi-gear"></i> Settings</a>
+            {% if request.user.is_superuser %}
+            <a href="{% url 'security_center' %}" class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none" style="color:var(--success)"><i class="bi bi-shield-check"></i> Security</a>
+            {% endif %}
         </nav>
     </div>
 </div>

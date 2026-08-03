@@ -18,6 +18,11 @@ class Expense(models.Model):
     amount = models.DecimalField(max_digits=12, decimal_places=2)
     date = models.DateField()
     description = models.TextField(blank=True, null=True)
+    
+    # OCR & Receipt Tracking
+    receipt_image = models.ImageField(upload_to='receipts/', blank=True, null=True)
+    ocr_processed = models.BooleanField(default=False, help_text="Has this receipt been processed by the OCR engine?")
+    ocr_text = models.TextField(blank=True, null=True, help_text="Raw text extracted from OCR")
 
     class Meta:
         ordering = ['-date']

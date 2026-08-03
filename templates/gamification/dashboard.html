@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %}Gamification – Vyra{% endblock %}
+
+{% block content %}
+<div class="page-header mb-4">
+    <div>
+        <h1 class="page-title"><i class="bi bi-trophy" style="color:var(--warning)"></i> Achievements</h1>
+        <p class="page-subtitle">Your Vyra Score and Financial Milestones</p>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="neu-card text-center p-4 h-100" style="background: linear-gradient(145deg, var(--surface) 0%, rgba(245, 166, 35, 0.05) 100%);">
+            <div style="font-size:3rem; color:var(--warning);"><i class="bi bi-star-fill"></i></div>
+            <div style="font-size:0.85rem; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Vyra Score</div>
+            <h2 style="font-weight:800; margin:0;">{{ score.score }}</h2>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="neu-card text-center p-4 h-100">
+            <div style="font-size:3rem; color:var(--primary);"><i class="bi bi-diagram-3-fill"></i></div>
+            <div style="font-size:0.85rem; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Current Level</div>
+            <h2 style="font-weight:800; margin:0;">Level {{ score.level }}</h2>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="neu-card text-center p-4 h-100">
+            <div style="font-size:3rem; color:var(--success);"><i class="bi bi-lightning-charge-fill"></i></div>
+            <div style="font-size:0.85rem; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Longest Streak</div>
+            <h2 style="font-weight:800; margin:0;">{{ score.longest_streak_days }} Days</h2>
+        </div>
+    </div>
+</div>
+
+<div class="neu-card">
+    <div class="neu-card-body">
+        <h5 class="fw-600 mb-3"><i class="bi bi-patch-check-fill" style="color:var(--primary)"></i> Earned Badges</h5>
+        <div class="row g-3">
+            {% for ub in user_badges %}
+            <div class="col-6 col-md-3">
+                <div class="text-center p-3" style="background:var(--surface); border:1px solid rgba(190,200,213,0.3); border-radius:var(--radius-md);">
+                    <div style="font-size:2rem; color:var(--warning); margin-bottom:0.5rem;"><i class="{{ ub.badge.icon }}"></i></div>
+                    <div class="fw-600" style="font-size:0.9rem;">{{ ub.badge.name }}</div>
+                    <div style="font-size:0.75rem; color:var(--text-muted);">{{ ub.badge.description }}</div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-4 text-muted">No badges earned yet. Keep tracking!</div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

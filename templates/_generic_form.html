@@ -2,7 +2,11 @@
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="fw-bold">{{ title }}</h2>
+    {% if back_url %}
     <a href="{% url back_url %}" class="btn btn-secondary">Back</a>
+    {% else %}
+    <a href="javascript:history.back()" class="btn btn-secondary">Back</a>
+    {% endif %}
 </div>
 <div class="card border-0 shadow-sm p-4 col-md-8 mx-auto">
     <form method="post">

@@ -22,7 +22,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', accounts_views.dashboard, name='dashboard'),
     path('accounts/', include('django.contrib.auth.urls')),
-    path('register/', accounts_views.register, name='register'),
+    path('access_vyra/', accounts_views.register, name='register'),
     # Expense Tracker
     path('income/', include('income.urls')),
     path('expenses/', include('expenses.urls')),
@@ -40,4 +40,12 @@ urlpatterns = [
     path('insurance/', include('insurance.urls')),
     path('bills/', include('bills.urls')),
     path('goals/', include('goals.urls')),
+    path('ai/', include('ai.urls')),
+    path('vault/', include('documents.urls')),
+    path('subscriptions/', include('subscriptions.urls')),
+    path('taxes/', include('taxes.urls')),
+    path('journal/', include('journal.urls')),
+    path('security/', include('backup.urls')),
+    path('gamification/', include('gamification.urls')),
+    path('settings/', include('platform_settings.urls')),
 ]

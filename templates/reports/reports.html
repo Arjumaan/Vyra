@@ -1,97 +1,125 @@
 {% extends 'base.html' %}
+{% block title %}Reports Center – Vyra{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Financial Report - {{ month_name }}</h2>
-    <button class="btn btn-primary" onclick="window.print()"><i class="bi bi-printer"></i> Print Report</button>
-</div>
-
-<div class="row mb-4">
-    <div class="col-md-3">
-        <div class="card bg-success text-white">
-            <div class="card-body">
-                <h5 class="card-title">Total Income</h5>
-                <h3 class="card-text">₹ {{ total_income }}</h3>
-            </div>
-        </div>
+<div class="page-header mb-4">
+    <div>
+        <h1 class="page-title"><i class="bi bi-bar-chart-line" style="color:var(--primary)"></i> Reports Center</h1>
+        <p class="page-subtitle">Export and analyze your financial data ({{ month_name }})</p>
     </div>
-    <div class="col-md-3">
-        <div class="card bg-danger text-white">
-            <div class="card-body">
-                <h5 class="card-title">Total Expenses</h5>
-                <h3 class="card-text">₹ {{ total_expense }}</h3>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card bg-info text-white">
-            <div class="card-body">
-                <h5 class="card-title">Net Savings</h5>
-                <h3 class="card-text">₹ {{ savings }}</h3>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card bg-secondary text-white">
-            <div class="card-body">
-                <h5 class="card-title">Avg Daily Spend</h5>
-                <h3 class="card-text">₹ {{ avg_daily }}</h3>
-            </div>
-        </div>
+    <div class="d-flex gap-2 flex-wrap">
+        <a href="{% url 'export_csv' %}?type=transactions" class="neu-btn"><i class="bi bi-filetype-csv"></i> Export All</a>
+        <a href="{% url 'export_csv' %}?type=income" class="neu-btn"><i class="bi bi-arrow-down-circle"></i> Income CSV</a>
+        <a href="{% url 'export_csv' %}?type=expenses" class="neu-btn"><i class="bi bi-arrow-up-circle"></i> Expenses CSV</a>
+        <button class="neu-btn neu-btn-primary" onclick="window.print()"><i class="bi bi-printer"></i> Print PDF</button>
     </div>
 </div>
 
-<div class="row">
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="stat-card text-center" style="padding:1.5rem;">
+            <div class="stat-icon success mx-auto"><i class="bi bi-arrow-down-circle"></i></div>
+            <div class="stat-label mt-2">Total Income</div>
+            <h3 class="fw-700 mt-1" style="color:var(--success); font-size:1.5rem;">₹{{ total_income }}</h3>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card text-center" style="padding:1.5rem;">
+            <div class="stat-icon danger mx-auto"><i class="bi bi-arrow-up-circle"></i></div>
+            <div class="stat-label mt-2">Total Expenses</div>
+            <h3 class="fw-700 mt-1" style="color:var(--danger); font-size:1.5rem;">₹{{ total_expense }}</h3>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card text-center" style="padding:1.5rem;">
+            <div class="stat-icon primary mx-auto"><i class="bi bi-safe2"></i></div>
+            <div class="stat-label mt-2">Net Savings</div>
+            <h3 class="fw-700 mt-1" style="color:var(--primary); font-size:1.5rem;">₹{{ savings }}</h3>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card text-center" style="padding:1.5rem;">
+            <div class="stat-icon warning mx-auto"><i class="bi bi-calendar-day"></i></div>
+            <div class="stat-label mt-2">Avg Daily Spend</div>
+            <h3 class="fw-700 mt-1" style="color:var(--text-primary); font-size:1.5rem;">₹{{ avg_daily }}</h3>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
     <div class="col-md-6">
-        <div class="card p-3 mb-4">
-            <h5>Expense Breakdown</h5>
-            <canvas id="categoryChart" height="200"></canvas>
+        <div class="neu-card h-100">
+            <div class="neu-card-body">
+                <h5 class="fw-600 mb-4" style="color:var(--text-primary); font-size:1rem;"><i class="bi bi-pie-chart-fill"></i> Expense Breakdown</h5>
+                {% if chart_data %}
+                <canvas id="categoryChart" height="240"></canvas>
+                {% else %}
+                <div class="text-center py-5 text-muted">No expenses recorded for this month</div>
+                {% endif %}
+            </div>
         </div>
     </div>
     <div class="col-md-6">
-        <div class="card p-3 mb-4">
-            <h5>Insights Summary</h5>
-            <ul class="list-group list-group-flush mt-3">
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    Top Spending Category
-                    <span class="fw-bold">{{ top_category.category__category_name|default:"-" }} (₹{{ top_category.total|default:"0" }})</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    Highest Single Expense
-                    <span class="fw-bold text-danger">{% if highest_expense %}₹{{ highest_expense.amount }} ({{ highest_expense.description|default:highest_expense.category.category_name }}){% else %}-{% endif %}</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    Lowest Single Expense
-                    <span class="fw-bold text-success">{% if lowest_expense %}₹{{ lowest_expense.amount }} ({{ lowest_expense.description|default:lowest_expense.category.category_name }}){% else %}-{% endif %}</span>
-                </li>
-            </ul>
+        <div class="neu-card h-100">
+            <div class="neu-card-body">
+                <h5 class="fw-600 mb-4" style="color:var(--text-primary); font-size:1rem;"><i class="bi bi-lightbulb"></i> Key Insights</h5>
+                <div class="d-flex flex-column gap-3">
+                    <div style="background:var(--surface); border:1px solid rgba(190,200,213,0.3); padding:1rem; border-radius:var(--radius-md);">
+                        <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; font-weight:600;">Top Spending Category</div>
+                        <div class="d-flex justify-content-between mt-1">
+                            <span class="fw-600" style="color:var(--text-primary);">{{ top_category.category__category_name|default:"-" }}</span>
+                            <span class="fw-700 text-danger">₹{{ top_category.total|default:"0"|floatformat:0 }}</span>
+                        </div>
+                    </div>
+                    <div style="background:var(--surface); border:1px solid rgba(190,200,213,0.3); padding:1rem; border-radius:var(--radius-md);">
+                        <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; font-weight:600;">Highest Single Expense</div>
+                        <div class="d-flex justify-content-between mt-1">
+                            <span class="fw-600" style="color:var(--text-primary);">{% if highest_expense %}{{ highest_expense.description|default:highest_expense.category.category_name }}{% else %}-{% endif %}</span>
+                            <span class="fw-700 text-danger">{% if highest_expense %}₹{{ highest_expense.amount|floatformat:0 }}{% else %}-{% endif %}</span>
+                        </div>
+                    </div>
+                    <div style="background:var(--surface); border:1px solid rgba(190,200,213,0.3); padding:1rem; border-radius:var(--radius-md);">
+                        <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; font-weight:600;">Lowest Single Expense</div>
+                        <div class="d-flex justify-content-between mt-1">
+                            <span class="fw-600" style="color:var(--text-primary);">{% if lowest_expense %}{{ lowest_expense.description|default:lowest_expense.category.category_name }}{% else %}-{% endif %}</span>
+                            <span class="fw-700 text-success">{% if lowest_expense %}₹{{ lowest_expense.amount|floatformat:0 }}{% else %}-{% endif %}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
+{% if chart_data %}
 <script>
+    Chart.defaults.font.family = 'Inter, sans-serif';
+    Chart.defaults.color = '#7a8fa6';
+
     const ctx = document.getElementById('categoryChart').getContext('2d');
-    
     const chartLabels = {{ chart_labels|safe }};
     const chartData = {{ chart_data|safe }};
     
-    // Generate distinct colors
-    const backgroundColors = [
-        '#0d6efd', '#6610f2', '#6f42c1', '#d63384', '#dc3545',
-        '#fd7e14', '#ffc107', '#198754', '#20c997', '#0dcaf0'
-    ];
-
     new Chart(ctx, {
-        type: 'pie',
+        type: 'doughnut',
         data: {
             labels: chartLabels,
             datasets: [{
                 data: chartData,
-                backgroundColor: backgroundColors.slice(0, chartLabels.length)
+                backgroundColor: ['#4f7ef7','#3ecf8e','#f0a04b','#e05c6c','#3eb8d6','#8b6cf7','#f04b8b','#4bf0cf'],
+                borderWidth: 0,
+                hoverOffset: 4
             }]
+        },
+        options: {
+            cutout: '75%',
+            plugins: {
+                legend: { position: 'right', labels: { usePointStyle: true, padding: 15, font: {size: 11} } }
+            }
         }
     });
 </script>
+{% endif %}
 {% endblock %}

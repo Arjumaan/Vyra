@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% block title %}Security Center – Vyra{% endblock %}
+
+{% block content %}
+<div class="page-header mb-4">
+    <div>
+        <h1 class="page-title"><i class="bi bi-shield-check" style="color:var(--success)"></i> Security & Backups</h1>
+        <p class="page-subtitle">Manage system integrity and audit logs</p>
+    </div>
+    <div>
+        <form method="post" action="{% url 'trigger_backup' %}">
+            {% csrf_token %}
+            <button type="submit" class="neu-btn neu-btn-primary"><i class="bi bi-cloud-arrow-up"></i> Trigger Manual Backup</button>
+        </form>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Backups -->
+    <div class="col-lg-6">
+        <div class="neu-card h-100">
+            <div class="neu-card-body">
+                <h5 class="fw-600 mb-3"><i class="bi bi-server"></i> Database Backups</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr style="border-bottom: 1px solid rgba(190,200,213,0.3); font-size:0.85rem; color:var(--text-muted); text-transform:uppercase;">
+                                <th>Timestamp</th>
+                                <th>Status</th>
+                                <th>Encrypted</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for backup in backups %}
+                            <tr style="border-bottom: 1px solid rgba(190,200,213,0.1);">
+                                <td class="fw-600" style="color:var(--text-primary);">{{ backup.created_at|date:"M d, Y H:i" }}</td>
+                                <td>
+                                    {% if backup.status == 'success' %}
+                                    <span class="neu-badge success">Success</span>
+                                    {% elif backup.status == 'failed' %}
+                                    <span class="neu-badge danger">Failed</span>
+                                    {% else %}
+                                    <span class="neu-badge warning">{{ backup.get_status_display }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if backup.is_encrypted %}
+                                    <span style="color:var(--success)"><i class="bi bi-lock-fill"></i></span>
+                                    {% else %}
+                                    <span style="color:var(--danger)"><i class="bi bi-unlock-fill"></i></span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="3" class="text-center py-4 text-muted">No backups generated yet.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Security Logs -->
+    <div class="col-lg-6">
+        <div class="neu-card h-100">
+            <div class="neu-card-body">
+                <h5 class="fw-600 mb-3"><i class="bi bi-list-check"></i> Security Audit Logs</h5>
+                <div class="d-flex flex-column gap-2" style="max-height:400px; overflow-y:auto;">
+                    {% for log in logs %}
+                    <div style="background:var(--surface); border-left:3px solid {% if log.action == 'login_failed' or log.action == 'suspicious_activity' %}var(--danger){% else %}var(--primary){% endif %}; padding:0.75rem 1rem; border-radius:4px;">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="fw-600" style="color:var(--text-primary); font-size:0.9rem;">{{ log.get_action_display }}</span>
+                            <span style="font-size:0.75rem; color:var(--text-muted);">{{ log.timestamp|date:"M d, H:i" }}</span>
+                        </div>
+                        <div style="font-size:0.8rem; color:var(--text-secondary);">
+                            User: {{ log.user.username|default:"System" }}
+                            {% if log.ip_address %}| IP: {{ log.ip_address }}{% endif %}
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center py-4 text-muted">No security logs recorded.</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

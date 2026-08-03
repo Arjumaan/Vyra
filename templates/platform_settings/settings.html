@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block title %}Settings – Vyra{% endblock %}
+
+{% block content %}
+<div class="page-header mb-4">
+    <div>
+        <h1 class="page-title"><i class="bi bi-gear" style="color:var(--primary)"></i> Preferences</h1>
+        <p class="page-subtitle">Configure your Vyra experience</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-8 mx-auto">
+        <div class="neu-card p-4">
+            <form method="post">
+                {% csrf_token %}
+                <h5 class="fw-600 mb-3"><i class="bi bi-palette"></i> Appearance & Identity</h5>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Theme</label>
+                        {{ form.theme }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Base Currency</label>
+                        {{ form.base_currency }}
+                    </div>
+                </div>
+
+                <hr class="mb-4" style="opacity:0.1;">
+
+                <h5 class="fw-600 mb-3"><i class="bi bi-bell"></i> Alerts & Notifications</h5>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <div class="form-check form-switch mb-2">
+                            {{ form.email_notifications }}
+                            <label class="form-check-label fw-semibold">Email Notifications</label>
+                        </div>
+                        <div class="form-check form-switch mb-2">
+                            {{ form.push_notifications }}
+                            <label class="form-check-label fw-semibold">Push Notifications</label>
+                        </div>
+                        <div class="form-check form-switch mb-2">
+                            {{ form.budget_alerts }}
+                            <label class="form-check-label fw-semibold">Budget Alerts</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check form-switch mb-2">
+                            {{ form.bill_reminders }}
+                            <label class="form-check-label fw-semibold">Bill Reminders</label>
+                        </div>
+                        <div class="form-check form-switch mb-2">
+                            {{ form.investment_alerts }}
+                            <label class="form-check-label fw-semibold">Investment Alerts</label>
+                        </div>
+                        <div class="form-check form-switch mb-2">
+                            {{ form.security_alerts }}
+                            <label class="form-check-label fw-semibold">Security Alerts</label>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="mb-4" style="opacity:0.1;">
+
+                <h5 class="fw-600 mb-3"><i class="bi bi-incognito"></i> Privacy</h5>
+                <div class="form-check form-switch mb-4">
+                    {{ form.hide_balances_by_default }}
+                    <label class="form-check-label fw-semibold">Hide balances by default (Privacy Mode)</label>
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="neu-btn neu-btn-primary">Save Preferences</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

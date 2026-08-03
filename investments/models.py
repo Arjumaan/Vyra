@@ -24,6 +24,11 @@ class Investment(models.Model):
     current_value = models.DecimalField(max_digits=14, decimal_places=2)
     purchase_date = models.DateField()
     broker = models.CharField(max_length=150, blank=True, null=True)
+    
+    # New analytics fields
+    sector = models.CharField(max_length=100, blank=True, null=True, help_text="e.g., Technology, Healthcare, Real Estate")
+    risk_level = models.CharField(max_length=20, choices=[('Low', 'Low'), ('Medium', 'Medium'), ('High', 'High')], default='Medium')
+    
     annual_return = models.DecimalField(max_digits=5, decimal_places=2, default=0)
     maturity_date = models.DateField(null=True, blank=True)
     notes = models.TextField(blank=True, null=True)

@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% block title %}Tax Records – Vyra{% endblock %}
+
+{% block content %}
+<div class="page-header mb-4">
+    <div>
+        <h1 class="page-title"><i class="bi bi-bank" style="color:var(--primary)"></i> Tax & Compliance</h1>
+        <p class="page-subtitle">Manage tax liabilities and tax-deductible donations</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{% url 'tax_add' %}" class="neu-btn neu-btn-primary"><i class="bi bi-plus-lg"></i> Add Tax Record</a>
+        <a href="{% url 'donation_add' %}" class="neu-btn"><i class="bi bi-heart-fill" style="color:var(--danger)"></i> Log Donation</a>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-6">
+        <div class="neu-card d-flex align-items-center p-4 gap-4" style="background: linear-gradient(145deg, var(--surface) 0%, rgba(62, 207, 142, 0.05) 100%);">
+            <div style="font-size:3rem; color:var(--text-primary);"><i class="bi bi-file-earmark-text"></i></div>
+            <div>
+                <div style="font-size:0.85rem; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Total Tax Paid</div>
+                <h2 style="font-weight:800; margin:0; color:var(--success)">₹{{ total_tax_paid|floatformat:0 }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="neu-card d-flex align-items-center p-4 gap-4">
+            <div style="font-size:3rem; color:var(--danger);"><i class="bi bi-heart"></i></div>
+            <div>
+                <div style="font-size:0.85rem; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Deductible Donations</div>
+                <h2 style="font-weight:800; margin:0; color:var(--danger)">₹{{ total_deductible_donations|floatformat:0 }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Tax Records -->
+    <div class="col-lg-8">
+        <div class="neu-card h-100">
+            <div class="neu-card-body">
+                <h5 class="fw-600 mb-3"><i class="bi bi-journal-text"></i> Tax Liabilities</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr style="border-bottom: 1px solid rgba(190,200,213,0.3); font-size:0.85rem; color:var(--text-muted); text-transform:uppercase;">
+                                <th>Year/Type</th>
+                                <th>Due Date</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for tax in taxes %}
+                            <tr style="border-bottom: 1px solid rgba(190,200,213,0.1);">
+                                <td>
+                                    <div class="fw-600" style="color:var(--text-primary);">{{ tax.tax_year }}</div>
+                                    <div style="font-size:0.8rem; color:var(--text-muted);">{{ tax.get_tax_type_display }}</div>
+                                </td>
+                                <td style="color:var(--text-secondary); font-size:0.9rem;">{{ tax.due_date|date:"M d, Y" }}</td>
+                                <td>
+                                    <div class="fw-600">₹{{ tax.amount_due }}</div>
+                                    <div style="font-size:0.8rem; color:var(--success);">Paid: ₹{{ tax.amount_paid }}</div>
+                                </td>
+                                <td>
+                                    {% if tax.status == 'paid' %}
+                                    <span class="neu-badge success">Paid</span>
+                                    {% elif tax.status == 'overdue' %}
+                                    <span class="neu-badge danger">Overdue</span>
+                                    {% else %}
+                                    <span class="neu-badge warning">Pending</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end">
+                                    <a href="{% url 'tax_edit' tax.pk %}" class="neu-btn neu-btn-sm"><i class="bi bi-pencil"></i></a>
+                                    <form method="post" action="{% url 'tax_delete' tax.pk %}" style="display:inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="neu-btn neu-btn-sm" style="color:var(--danger);" onclick="return confirm('Delete this tax record?');"><i class="bi bi-trash"></i></button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="5" class="text-center py-4 text-muted">No tax records found</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Donations -->
+    <div class="col-lg-4">
+        <div class="neu-card h-100">
+            <div class="neu-card-body">
+                <h5 class="fw-600 mb-3"><i class="bi bi-heart-fill" style="color:var(--danger)"></i> Donations (80G)</h5>
+                <div class="d-flex flex-column gap-3">
+                    {% for don in donations %}
+                    <div style="background:var(--surface); border:1px solid rgba(190,200,213,0.3); padding:1rem; border-radius:var(--radius-md);">
+                        <div class="d-flex justify-content-between align-items-start mb-1">
+                            <span class="fw-600" style="color:var(--text-primary);">{{ don.organization_name }}</span>
+                            <span class="fw-700" style="color:var(--danger)">₹{{ don.amount|floatformat:0 }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center" style="font-size:0.8rem; color:var(--text-muted);">
+                            <span>{{ don.date|date:"M d, Y" }}</span>
+                            {% if don.is_tax_deductible %}
+                            <span class="neu-badge success" style="font-size:0.7rem; padding:2px 6px;">Tax Deductible</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center py-4 text-muted">No donations logged yet</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

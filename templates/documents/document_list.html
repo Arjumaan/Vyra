@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% block title %}Digital Vault – Vyra{% endblock %}
+
+{% block content %}
+<div class="page-header mb-4">
+    <div>
+        <h1 class="page-title"><i class="bi bi-shield-lock" style="color:var(--primary)"></i> Digital Vault</h1>
+        <p class="page-subtitle">Secure storage for your sensitive financial documents</p>
+    </div>
+    <div>
+        <a href="{% url 'document_add' %}" class="neu-btn neu-btn-primary"><i class="bi bi-cloud-arrow-up"></i> Upload Document</a>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-6">
+        <div class="neu-card d-flex align-items-center p-4 gap-4" style="background: linear-gradient(145deg, var(--surface) 0%, rgba(79, 126, 247, 0.05) 100%);">
+            <div style="font-size:3rem; color:var(--text-primary);"><i class="bi bi-files"></i></div>
+            <div>
+                <div style="font-size:0.85rem; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Total Documents</div>
+                <h2 style="font-weight:800; margin:0;">{{ total_docs }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="neu-card d-flex align-items-center p-4 gap-4">
+            <div style="font-size:3rem; color:var(--success);"><i class="bi bi-file-earmark-lock2-fill"></i></div>
+            <div>
+                <div style="font-size:0.85rem; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Encrypted Files</div>
+                <h2 style="font-weight:800; margin:0;">{{ encrypted_docs }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="neu-card">
+    <div class="neu-card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr style="border-bottom: 1px solid rgba(190,200,213,0.3); font-size:0.85rem; color:var(--text-muted); text-transform:uppercase;">
+                        <th>Document Name</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Uploaded On</th>
+                        <th>Expiry</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for doc in documents %}
+                    <tr style="border-bottom: 1px solid rgba(190,200,213,0.1);">
+                        <td class="fw-600" style="color:var(--text-primary);">
+                            <a href="{{ doc.file.url }}" target="_blank" style="text-decoration:none; color:inherit;">{{ doc.document_name }}</a>
+                        </td>
+                        <td><span class="neu-badge">{{ doc.get_document_type_display }}</span></td>
+                        <td>
+                            {% if doc.is_encrypted %}
+                            <span class="neu-badge success"><i class="bi bi-lock-fill"></i> Encrypted</span>
+                            {% else %}
+                            <span class="neu-badge warning">Standard</span>
+                            {% endif %}
+                        </td>
+                        <td style="color:var(--text-secondary); font-size:0.9rem;">{{ doc.uploaded_at|date:"M d, Y" }}</td>
+                        <td style="color:var(--text-secondary); font-size:0.9rem;">{{ doc.expiry_date|default:"-" }}</td>
+                        <td class="text-end">
+                            <a href="{{ doc.file.url }}" class="neu-btn neu-btn-sm" target="_blank"><i class="bi bi-eye"></i></a>
+                            <form method="post" action="{% url 'document_delete' doc.pk %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="neu-btn neu-btn-sm" style="color:var(--danger);" onclick="return confirm('Permanently delete this document?');"><i class="bi bi-trash"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5 text-muted">
+                            <div style="font-size:3rem; margin-bottom:1rem; opacity:0.5;"><i class="bi bi-folder-x"></i></div>
+                            <h5>Your Vault is empty</h5>
+                            <p>Upload important financial documents for secure access.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
