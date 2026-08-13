@@ -1,0 +1,557 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vyra - AI That Understands Your Money</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#f8fbff">
+    <link rel="apple-touch-icon" href="{% static 'images/Vyra_Favicon_BG_REMOVED.png' %}">
+    <link rel="icon" type="image/png" href="{% static 'images/Vyra_Favicon_BG_REMOVED.png' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* General Setup */
+        :root {
+            --text-dark: #1a1e2d;
+            --text-muted: #5e667b;
+            --bg-color: #f8fbff;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            color: var(--text-dark);
+        }
+        
+        /* Navbar */
+        .navbar {
+            padding: 1.5rem 5%;
+            position: absolute;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar-brand img {
+            height: 35px;
+        }
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 600;
+            margin-left: 2rem;
+            transition: color 0.3s;
+        }
+        .nav-links a:hover {
+            color: #8b5cf6;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 100px 5% 40px;
+            overflow: hidden;
+        }
+
+        /* Background Blobs */
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -1;
+            opacity: 0.6;
+        }
+        .blob-1 {
+            top: -10%;
+            left: -5%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, #c084fc, #60a5fa);
+        }
+        .blob-2 {
+            top: 10%;
+            right: -5%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, #38bdf8, #818cf8);
+        }
+        .blob-3 {
+            bottom: -10%;
+            left: 10%;
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, #2dd4bf, #38bdf8);
+            opacity: 0.4;
+        }
+        .blob-4 {
+            bottom: -20%;
+            right: 20%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, #a78bfa, #2dd4bf);
+            opacity: 0.3;
+        }
+
+        /* Decorative floating shapes */
+        .shape {
+            position: absolute;
+            z-index: 0;
+            animation: floatShape 6s ease-in-out infinite;
+        }
+        .shape-pill {
+            top: 15%;
+            left: 45%;
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #2dd4bf, #3b82f6);
+            transform: rotate(45deg);
+        }
+        .shape-diamond {
+            bottom: 20%;
+            left: 35%;
+            width: 30px;
+            height: 30px;
+            border: 4px solid #38bdf8;
+            border-radius: 8px;
+            transform: rotate(45deg);
+            animation-delay: 1s;
+        }
+        .shape-triangle {
+            bottom: 10%;
+            right: 15%;
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-bottom: 35px solid transparent;
+            border-bottom-color: #8b5cf6;
+            transform: rotate(15deg);
+            opacity: 0.8;
+            animation-delay: 2s;
+        }
+
+        @keyframes floatShape {
+            0%, 100% { transform: translateY(0) rotate(45deg); }
+            50% { transform: translateY(-20px) rotate(60deg); }
+        }
+
+        /* Left Content */
+        .hero-content {
+            max-width: 550px;
+            position: relative;
+            z-index: 10;
+        }
+        .hero-title {
+            font-size: clamp(3rem, 5vw, 4.2rem);
+            font-weight: 800;
+            line-height: 1.1;
+            color: #1a1e2d;
+            margin-bottom: 1.5rem;
+            letter-spacing: -1.5px;
+        }
+        .hero-subtitle {
+            font-size: 1.15rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 2.5rem;
+            max-width: 450px;
+        }
+        .btn-learn {
+            background: linear-gradient(135deg, #7c3aed, #3b82f6);
+            color: white;
+            padding: 1rem 2.5rem;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+            transition: all 0.3s ease;
+            border: none;
+        }
+        .btn-learn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(99, 102, 241, 0.4);
+            color: white;
+        }
+
+        /* Right Graphic (Phone & Cards) */
+        .hero-graphic {
+            position: relative;
+            height: 600px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 5;
+        }
+        
+        .graphic-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            perspective: 1000px;
+        }
+
+        /* The Phone */
+        .phone {
+            width: 290px;
+            height: 580px;
+            background: white;
+            border-radius: 40px;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-30%, -50%) rotate(12deg);
+            box-shadow: -15px 20px 40px rgba(0,0,0,0.1), inset 0 0 0 8px #f1f5f9;
+            padding: 15px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .phone-notch {
+            width: 120px;
+            height: 25px;
+            background: #f1f5f9;
+            border-radius: 0 0 15px 15px;
+            margin: -15px auto 10px;
+        }
+        .phone-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 5px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        .phone-graph {
+            height: 100px;
+            margin: 20px 0;
+            background: linear-gradient(180deg, rgba(45, 212, 191, 0.1) 0%, rgba(255,255,255,0) 100%);
+            border-radius: 12px;
+            position: relative;
+        }
+        .graph-line {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            height: 2px;
+            background: #2dd4bf;
+            transform: rotate(-10deg);
+        }
+        .phone-list {
+            flex: 1;
+            background: #f8fafc;
+            border-radius: 20px;
+            padding: 15px;
+        }
+        .list-title {
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+        .list-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 10px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+        .list-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-size: 0.8rem;
+        }
+        .list-info {
+            flex: 1;
+        }
+        .list-name { font-size: 0.8rem; font-weight: 600; }
+        .list-price { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; }
+
+        /* Floating Cards */
+        .float-card {
+            position: absolute;
+            background: white;
+            border-radius: 16px;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+            animation: float 5s ease-in-out infinite;
+            z-index: 20;
+            white-space: nowrap;
+        }
+        .float-card:hover {
+            transform: scale(1.05);
+        }
+        .fc-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            margin-right: 15px;
+        }
+        .fc-info {
+            display: flex;
+            flex-direction: column;
+        }
+        .fc-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-dark);
+            margin-bottom: 2px;
+        }
+        .fc-price {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--text-dark);
+        }
+
+        /* Card Positioning & Styling */
+        .card-1 {
+            top: 25%;
+            left: 5%;
+            animation-delay: 0s;
+        }
+        .card-1 .fc-icon { background: #fdf5e6; }
+        
+        .card-2 {
+            top: 40%;
+            right: 0%;
+            animation-delay: 1.2s;
+        }
+        .card-2 .fc-icon { background: #ecfdf5; color: #10b981; }
+
+        .card-3 {
+            top: 60%;
+            left: -5%;
+            animation-delay: 0.8s;
+        }
+        .card-3 .fc-icon { background: #fff7ed; }
+
+        .card-4 {
+            top: 75%;
+            right: 15%;
+            animation-delay: 1.5s;
+        }
+        .card-4 .fc-icon { background: #f5f3ff; color: #8b5cf6; }
+
+        /* Connected lines SVG behind cards */
+        .connection-lines {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 10;
+            pointer-events: none;
+        }
+        .line-path {
+            fill: none;
+            stroke: #8b5cf6;
+            stroke-width: 2;
+            stroke-dasharray: 6 6;
+            opacity: 0.4;
+        }
+        .solid-path {
+            fill: none;
+            stroke: #2dd4bf;
+            stroke-width: 3;
+            opacity: 0.8;
+            filter: drop-shadow(0 4px 6px rgba(45,212,191,0.4));
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        @media (max-width: 991px) {
+            .hero-section {
+                flex-direction: column;
+                text-align: center;
+                padding-top: 120px;
+            }
+            .hero-content {
+                margin: 0 auto 50px;
+            }
+            .hero-subtitle {
+                margin: 0 auto 2rem;
+            }
+            .hero-graphic {
+                height: 500px;
+                transform: scale(0.85);
+            }
+            .phone {
+                transform: translate(-50%, -50%) rotate(0deg);
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .hero-graphic {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Blobs & Shapes -->
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    <div class="blob blob-4"></div>
+    
+    <div class="shape shape-pill"></div>
+    <div class="shape shape-diamond"></div>
+    <div class="shape shape-triangle"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a href="/" class="navbar-brand">
+            <img src="{% static 'images/Vyra_Horizontal_Logo.png' %}" alt="Vyra">
+        </a>
+        <div class="nav-links d-none d-md-block">
+            <a href="{% url 'login' %}">Sign In</a>
+            <a href="{% url 'register' %}" class="btn-learn" style="padding: 0.6rem 1.5rem; margin-left: 1.5rem; box-shadow: none;">Get Started</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                
+                <!-- Left Text -->
+                <div class="col-lg-5">
+                    <div class="hero-content">
+                        <h1 class="hero-title">AI That<br>Understands<br>Your Money</h1>
+                        <p class="hero-subtitle">AI-powered expense tracking and financial intelligence application</p>
+                        <a href="{% url 'register' %}" class="btn-learn">Learn more</a>
+                    </div>
+                </div>
+                
+                <!-- Right Graphic -->
+                <div class="col-lg-7">
+                    <div class="hero-graphic">
+                        <div class="graphic-container">
+                            
+                            <!-- Connecting Lines -->
+                            <svg class="connection-lines" viewBox="0 0 800 600">
+                                <path class="line-path" d="M150,250 C250,250 300,350 400,350 C500,350 550,250 650,250" />
+                                <path class="solid-path" d="M100,400 C200,450 300,450 400,400 C500,350 600,400 700,350" />
+                                <circle cx="400" cy="400" r="6" fill="#2dd4bf" />
+                                <circle cx="200" cy="437" r="4" fill="#8b5cf6" />
+                            </svg>
+
+                            <!-- Phone -->
+                            <div class="phone">
+                                <div class="phone-notch"></div>
+                                <div class="phone-header">
+                                    <i class="bi bi-list fs-5"></i>
+                                    <span>AI Dashboard</span>
+                                    <i class="bi bi-bell fs-5"></i>
+                                </div>
+                                <div class="phone-graph">
+                                    <div class="graph-line"></div>
+                                </div>
+                                <div class="phone-list">
+                                    <div class="list-title">Expenses</div>
+                                    <div class="list-item">
+                                        <div class="list-icon" style="background:#fdf5e6;">☕</div>
+                                        <div class="list-info">
+                                            <div class="list-name">Starbucks</div>
+                                            <div class="list-price">$5.00</div>
+                                        </div>
+                                    </div>
+                                    <div class="list-item">
+                                        <div class="list-icon" style="background:#f1f5f9;"><i class="bi bi-bag"></i></div>
+                                        <div class="list-info">
+                                            <div class="list-name">Amazon</div>
+                                            <div class="list-price">$32.00</div>
+                                        </div>
+                                    </div>
+                                    <div class="list-item">
+                                        <div class="list-icon" style="background:#ecfdf5; color:#10b981;"><i class="bi bi-cash"></i></div>
+                                        <div class="list-info">
+                                            <div class="list-name">Salary</div>
+                                            <div class="list-price" style="color:#10b981;">+$4,200.00</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Floating Cards -->
+                            <div class="float-card card-1">
+                                <div class="fc-icon">☕</div>
+                                <div class="fc-info">
+                                    <div class="fc-name">Starbucks</div>
+                                    <div class="fc-price">$5.50</div>
+                                </div>
+                            </div>
+                            
+                            <div class="float-card card-2">
+                                <div class="fc-icon">🎁</div>
+                                <div class="fc-info">
+                                    <div class="fc-name">Doshbeke</div>
+                                    <div class="fc-price">$4.00</div>
+                                </div>
+                            </div>
+                            
+                            <div class="float-card card-3">
+                                <div class="fc-icon">🛋️</div>
+                                <div class="fc-info">
+                                    <div class="fc-name">Prosn Foster</div>
+                                    <div class="fc-price">$5.50</div>
+                                </div>
+                            </div>
+                            
+                            <div class="float-card card-4">
+                                <div class="fc-icon">🛍️</div>
+                                <div class="fc-info">
+                                    <div class="fc-name">Promotiszation</div>
+                                    <div class="fc-price">$5.00</div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+    
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js').then(function(registration) {
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                }, function(err) {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+    </script>
+</body>
+</html>

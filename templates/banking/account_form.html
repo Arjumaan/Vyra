@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }} – Vyra{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title"><i class="bi bi-bank" style="color:var(--primary)"></i> {{ title }}</h1>
+        <p class="page-subtitle">Add or update your financial account details</p>
+    </div>
+    <a href="{% url 'bank_list' %}" class="neu-btn"><i class="bi bi-arrow-left"></i> Back to Banking</a>
+</div>
+
+<div class="neu-card p-4 mx-auto" style="max-width:800px;">
+    <form method="post">
+        {% csrf_token %}
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">Category</label>
+                {{ form.category }}
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Account Type</label>
+                {{ form.account_type }}
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Provider/Bank</label>
+                {{ form.provider }}
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Nickname (Optional)</label>
+                {{ form.nickname }}
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Account Number</label>
+                {{ form.account_number }}
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Currency</label>
+                {{ form.currency }}
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Opening Balance</label>
+                {{ form.opening_balance }}
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Status</label>
+                {{ form.status }}
+            </div>
+            <div class="col-12 mt-4 mb-2"><h5 class="fw-700" style="color:var(--text-secondary)">Card Details (If applicable)</h5></div>
+            <div class="col-md-6">
+                <label class="form-label">Credit Limit</label>
+                {{ form.credit_limit }}
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Expiry Date</label>
+                {{ form.expiry_date }}
+            </div>
+            <div class="col-md-12">
+                <label class="form-label">Rewards Program</label>
+                {{ form.rewards_program }}
+            </div>
+            
+            <div class="col-12 mt-4 mb-2"><h5 class="fw-700" style="color:var(--text-secondary)">Interest Configuration (Optional)</h5></div>
+            <div class="col-md-6">
+                <label class="form-label">Interest Rate (%)</label>
+                {{ form.interest_rate }}
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Interest Type</label>
+                {{ form.interest_type }}
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Compounding Frequency</label>
+                {{ form.compounding_frequency }}
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Interest Credit Frequency</label>
+                {{ form.interest_credit_frequency }}
+            </div>
+            
+            <div class="col-12 mt-4 mb-2"><h5 class="fw-700" style="color:var(--text-secondary)">Styling & Notes</h5></div>
+            <div class="col-md-6">
+                <label class="form-label">Custom Icon (e.g., 'bi-bank')</label>
+                {{ form.custom_icon }}
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Theme Color (Hex or CSS var)</label>
+                {{ form.theme_color }}
+            </div>
+            <div class="col-md-12">
+                <label class="form-label">Notes</label>
+                {{ form.notes }}
+            </div>
+        </div>
+        <div class="text-end mt-4">
+            <button type="submit" class="neu-btn neu-btn-primary">Save Account</button>
+        </div>
+    </form>
+</div>
+<style>
+    /* Styling for generated fields */
+    input, select, textarea {
+        display: block;
+        width: 100%;
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+        font-weight: 500;
+        line-height: 1.5;
+        color: var(--text-primary);
+        background-color: var(--bg-neu);
+        background-clip: padding-box;
+        border: none;
+        border-radius: 12px;
+        box-shadow: inset var(--shadow-neu);
+        transition: box-shadow .2s;
+    }
+    input:focus, select:focus, textarea:focus {
+        outline: none;
+        box-shadow: inset 3px 3px 6px #cbced1, inset -3px -3px 6px #ffffff, 0 0 0 3px rgba(74,144,226,0.2);
+    }
+</style>
+{% endblock %}

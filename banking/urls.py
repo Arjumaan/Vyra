@@ -1,11 +1,10 @@
 from django.urls import path
 from . import views
+
 urlpatterns = [
     path('', views.bank_list, name='bank_list'),
-    path('bank/add/', views.bank_create, name='bank_create'),
-    path('bank/<int:pk>/edit/', views.bank_update, name='bank_update'),
-    path('bank/<int:pk>/delete/', views.bank_delete, name='bank_delete'),
-    path('card/add/', views.card_create, name='card_create'),
-    path('card/<int:pk>/edit/', views.card_update, name='card_update'),
-    path('card/<int:pk>/delete/', views.card_delete, name='card_delete'),
+    path('account/add/', views.account_create, name='account_create'),
+    path('account/<int:pk>/edit/', views.account_update, name='account_update'),
+    path('account/<int:pk>/delete/', views.account_delete, name='account_delete'),
+    path('transaction/add/', views.transaction_create, name='transaction_create'),
 ]

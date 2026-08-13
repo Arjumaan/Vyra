@@ -8,6 +8,12 @@ from budget.models import Budget
 from django.db.models import Sum
 import datetime
 
+def landing(request):
+    if request.user.is_authenticated:
+        return redirect('dashboard')
+    return render(request, 'landing.html')
+
+
 def register(request):
     if request.method == 'POST':
         form = UserRegisterForm(request.POST)

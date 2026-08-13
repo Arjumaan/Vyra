@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }} – Vyra{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title"><i class="bi bi-arrow-left-right" style="color:var(--primary)"></i> {{ title }}</h1>
+        <p class="page-subtitle">Record a new transaction for your account</p>
+    </div>
+    <a href="{% url 'bank_list' %}" class="neu-btn"><i class="bi bi-arrow-left"></i> Back to Banking</a>
+</div>
+
+<div class="neu-card p-4 mx-auto" style="max-width:600px;">
+    <form method="post">
+        {% csrf_token %}
+        <div class="row g-3">
+            <div class="col-md-12">
+                <label class="form-label">Account</label>
+                {{ form.account }}
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Transaction Type</label>
+                {{ form.transaction_type }}
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Amount (₹)</label>
+                {{ form.amount }}
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Date & Time</label>
+                {{ form.date }}
+            </div>
+            <div class="col-md-12">
+                <label class="form-label">Description</label>
+                {{ form.description }}
+            </div>
+        </div>
+        <div class="text-end mt-4">
+            <button type="submit" class="neu-btn neu-btn-primary">Save Transaction</button>
+        </div>
+    </form>
+</div>
+<style>
+    /* Styling for generated fields */
+    input, select, textarea {
+        display: block;
+        width: 100%;
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+        font-weight: 500;
+        line-height: 1.5;
+        color: var(--text-primary);
+        background-color: var(--bg-neu);
+        background-clip: padding-box;
+        border: none;
+        border-radius: 12px;
+        box-shadow: inset var(--shadow-neu);
+        transition: box-shadow .2s;
+    }
+    input:focus, select:focus, textarea:focus {
+        outline: none;
+        box-shadow: inset 3px 3px 6px #cbced1, inset -3px -3px 6px #ffffff, 0 0 0 3px rgba(74,144,226,0.2);
+    }
+</style>
+{% endblock %}

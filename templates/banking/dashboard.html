@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+{% block title %}Banking & Cards – Vyra{% endblock %}
+{% block content %}
+<style>
+    .bank-icon-box {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        background: var(--surface);
+        box-shadow: var(--shadow-inset);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+</style>
+<div class="page-header">
+    <div>
+        <h1 class="page-title"><i class="bi bi-bank" style="color:var(--primary)"></i> Banking & Cards</h1>
+        <p class="page-subtitle">Manage your bank accounts and credit cards</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{% url 'account_create' %}?category=bank" class="neu-btn neu-btn-primary"><i class="bi bi-plus-circle"></i> Add Bank</a>
+        <a href="{% url 'account_create' %}?category=card" class="neu-btn"><i class="bi bi-credit-card"></i> Add Card</a>
+        <a href="{% url 'transaction_create' %}" class="neu-btn"><i class="bi bi-arrow-left-right"></i> Add Transaction</a>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon primary">
+                <i class="bi bi-bank"></i>
+            </div>
+            <div class="stat-label">TOTAL BANK BALANCE</div>
+            <div class="stat-value primary">₹{{ total_bank|floatformat:2 }}</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;"><i class="bi bi-arrow-up-right" style="color: var(--success)"></i> Today's Change: ₹0.00</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon danger">
+                <i class="bi bi-credit-card"></i>
+            </div>
+            <div class="stat-label">CREDIT USED</div>
+            <div class="stat-value danger">₹{{ total_credit_used|floatformat:2 }}</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">{{ cards|length }} Linked Cards</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon success">
+                <i class="bi bi-shield-check"></i>
+            </div>
+            <div class="stat-label">CREDIT LIMIT</div>
+            <div class="stat-value success">₹{{ total_credit_limit|floatformat:2 }}</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon warning">
+                <i class="bi bi-wallet2"></i>
+            </div>
+            <div class="stat-label">ACCOUNTS LINKED</div>
+            <div class="stat-value warning">{{ total_accounts_linked }}</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">Last Updated: Just now</div>
+        </div>
+    </div>
+</div>
+
+<div class="fw-700 mb-2 mt-1" style="font-size:0.9rem;color:var(--text-secondary);">Bank Accounts</div>
+<div class="neu-table-wrap mb-4">
+    <table class="neu-table">
+        <thead>
+            <tr>
+                <th>Account</th>
+                <th>Type</th>
+                <th>Account No.</th>
+                <th>Balance</th>
+                <th>Interest</th>
+                <th class="text-end">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for b in banks %}
+        <tr>
+            <td>
+                <div class="d-flex align-items-center gap-2">
+                    <div class="bank-icon-box {% if not b.theme_color %}text-primary-neu{% endif %}" {% if b.theme_color %}style="color: {{ b.theme_color }};"{% endif %}>
+                        <i class="bi {{ b.custom_icon|default:'bi-bank' }}"></i>
+                    </div>
+                    <div>
+                        <div class="fw-600">{{ b.nickname|default:b.provider }}</div>
+                        <small style="color:var(--text-muted);">{{ b.provider }}</small>
+                    </div>
+                </div>
+            </td>
+            <td><span class="neu-badge primary">{{ b.get_account_type_display }}</span></td>
+            <td style="color:var(--text-muted);">...{{ b.account_number|slice:"-4:" }}</td>
+            <td class="fw-700 text-success-neu">₹{{ b.current_balance|floatformat:2 }}</td>
+            <td>{{ b.interest_rate }}% <small class="text-muted">({{ b.get_interest_type_display }})</small></td>
+            <td class="text-end">
+                <div class="d-flex gap-1 justify-content-end">
+                    <a href="{% url 'account_update' b.pk %}" class="neu-btn-icon"><i class="bi bi-pencil"></i></a>
+                    <form method="post" action="{% url 'account_delete' b.pk %}" class="d-inline">
+                        {% csrf_token %}
+                        <button class="neu-btn-icon danger" type="submit"><i class="bi bi-trash"></i></button>
+                    </form>
+                </div>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" class="text-center py-4" style="color:var(--text-muted);">No bank accounts added.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="fw-700 mb-2" style="font-size:0.9rem;color:var(--text-secondary);">Cards</div>
+<div class="neu-table-wrap mb-4">
+    <table class="neu-table">
+        <thead>
+            <tr>
+                <th>Card</th>
+                <th>Type</th>
+                <th>Limit</th>
+                <th>Outstanding</th>
+                <th>Available</th>
+                <th>Utilization</th>
+                <th class="text-end">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for c in cards %}
+        <tr>
+            <td>
+                <div class="d-flex align-items-center gap-2">
+                    <div class="bank-icon-box {% if not c.theme_color %}text-danger-neu{% endif %}" {% if c.theme_color %}style="color: {{ c.theme_color }};"{% endif %}>
+                        <i class="bi {{ c.custom_icon|default:'bi-credit-card' }}"></i>
+                    </div>
+                    <div>
+                        <div class="fw-600">{{ c.nickname|default:c.provider }}</div>
+                        <small style="color:var(--text-muted);">{{ c.provider }}</small>
+                    </div>
+                </div>
+            </td>
+            <td><span class="neu-badge warning">{{ c.get_account_type_display }}</span></td>
+            <td>{% if c.credit_limit %}₹{{ c.credit_limit|floatformat:2 }}{% else %}-{% endif %}</td>
+            <td class="text-danger-neu fw-600">₹{{ c.get_outstanding_amount|floatformat:2 }}</td>
+            <td class="text-success-neu fw-600">₹{{ c.get_available_balance|floatformat:2 }}</td>
+            <td style="min-width:130px;">
+                {% if c.credit_limit %}
+                <div class="d-flex align-items-center gap-2">
+                    <div class="neu-progress flex-fill" style="min-width:60px; --pw: {{ c.utilization_percent|default:0 }}%;">
+                        <div class="neu-progress-bar {% if c.utilization_percent > 70 %}danger{% elif c.utilization_percent > 40 %}warning{% else %}success{% endif %}" style="width: var(--pw);"></div>
+                    </div>
+                    <small class="fw-600" style="font-size:0.75rem;">{{ c.utilization_percent }}%</small>
+                </div>
+                {% else %}
+                -
+                {% endif %}
+            </td>
+            <td class="text-end">
+                <div class="d-flex gap-1 justify-content-end">
+                    <a href="{% url 'account_update' c.pk %}" class="neu-btn-icon"><i class="bi bi-pencil"></i></a>
+                    <form method="post" action="{% url 'account_delete' c.pk %}" class="d-inline">
+                        {% csrf_token %}
+                        <button class="neu-btn-icon danger" type="submit"><i class="bi bi-trash"></i></button>
+                    </form>
+                </div>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" class="text-center py-4" style="color:var(--text-muted);">No cards added.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="fw-700 mb-2 mt-4" style="font-size:0.9rem;color:var(--text-secondary);">Recent Transactions</div>
+<div class="neu-table-wrap mb-4">
+    <table class="neu-table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Account</th>
+                <th>Description</th>
+                <th>Type</th>
+                <th class="text-end">Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for account in banks|add:cards %}
+            {% for t in account.transactions.all|slice:":3" %}
+            <tr>
+                <td style="color:var(--text-muted);">{{ t.date|date:"M d, Y" }}</td>
+                <td class="fw-600">{{ t.account.nickname|default:t.account.provider }}</td>
+                <td>{{ t.description }}</td>
+                <td><span class="neu-badge info">{{ t.get_transaction_type_display }}</span></td>
+                <td class="text-end fw-700 {% if t.transaction_type in 'income,adjustment_credit,interest,refund,cashback,rewards' %}text-success-neu{% else %}text-danger-neu{% endif %}">
+                    {% if t.transaction_type in 'income,adjustment_credit,interest,refund,cashback,rewards' %}+{% else %}-{% endif %}₹{{ t.amount|floatformat:2 }}
+                </td>
+            </tr>
+            {% empty %}
+            {% endfor %}
+        {% empty %}
+        <tr><td colspan="5" class="text-center py-4" style="color:var(--text-muted);">No transactions yet.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

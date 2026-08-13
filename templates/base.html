@@ -8,6 +8,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Vyra{% endblock %}</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#1a1e2d">
+    <link rel="apple-touch-icon" href="{% static 'images/Vyra_Favicon_BG_REMOVED.png' %}">
+    <link rel="icon" type="image/png" href="{% static 'images/Vyra_Favicon_BG_REMOVED.png' %}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -30,9 +34,10 @@
 
     <!-- ===== SIDEBAR ===== -->
     <aside class="neu-sidebar d-none d-md-flex flex-column">
-        <div class="sidebar-brand">
-            <div class="brand-icon"><i class="bi bi-wallet2"></i></div>
-            <a href="{% url 'dashboard' %}" class="brand-text">Vyra</a>
+        <div class="sidebar-brand py-3 d-flex align-items-center justify-content-center">
+            <a href="{% url 'dashboard' %}">
+                <img src="{% static 'images/Vyra_Horizontal_Logo.png' %}" alt="Vyra Logo" style="max-height: 40px; width: auto; object-fit: contain;">
+            </a>
         </div>
 
         <nav class="flex-fill pt-1 pb-3">
@@ -107,7 +112,9 @@
         <div class="topbar">
             <!-- Mobile brand -->
             <div class="d-md-none">
-                <span class="fw-700" style="color:var(--primary)"><i class="bi bi-wallet2"></i> Vyra</span>
+                <a href="{% url 'dashboard' %}">
+                    <img src="{% static 'images/Vyra_Horizontal_Logo.png' %}" alt="Vyra Logo" style="height: 28px;">
+                </a>
             </div>
             <div class="topbar-title d-none d-md-block">
                 Welcome back, <strong>{{ user.get_full_name|default:user.username }}</strong>
@@ -140,7 +147,7 @@
 <!-- Mobile Offcanvas Sidebar -->
 <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileSidebar" style="background:var(--surface);width:240px;">
     <div class="offcanvas-header">
-        <span class="fw-700 fs-5" style="color:var(--primary)"><i class="bi bi-wallet2"></i> Vyra</span>
+        <img src="{% static 'images/Vyra_Horizontal_Logo.png' %}" alt="Vyra Logo" style="height: 32px;">
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
     </div>
     <div class="offcanvas-body p-0">
@@ -170,9 +177,8 @@
 {% else %}
 <!-- Public Layout -->
 <div class="public-container">
-    <div class="auth-logo">
-        <div class="logo-icon"><i class="bi bi-wallet2"></i></div>
-        <h4 class="fw-700 mt-2" style="color:var(--text-primary)">Vyra</h4>
+    <div class="auth-logo text-center mb-4">
+        <img src="{% static 'images/Vyra_Logo.png' %}" alt="Vyra Logo" style="height: 90px; margin-bottom: 10px;">
         <p style="color:var(--text-muted);font-size:0.83rem;">Smart Personal Wealth Management Platform</p>
     </div>
     {% if messages %}{% for message in messages %}
@@ -185,6 +191,40 @@
 {% endif %}
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Persist sidebar scroll position across page reloads
+    document.addEventListener("DOMContentLoaded", function() {
+        const sidebar = document.querySelector('.neu-sidebar');
+        const sidebarNav = document.querySelector('.neu-sidebar nav');
+        
+        [sidebar, sidebarNav].forEach(el => {
+            if (el) {
+                const key = 'sidebarScrollPos_' + el.tagName;
+                const scrollPos = sessionStorage.getItem(key);
+                if (scrollPos) {
+                    // Try to restore without smooth scrolling for instant snap
+                    el.style.scrollBehavior = 'auto';
+                    el.scrollTop = parseInt(scrollPos, 10);
+                }
+                
+                el.addEventListener('scroll', function() {
+                    sessionStorage.setItem(key, el.scrollTop);
+                });
+            }
+        });
+
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js').then(function(registration) {
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                }, function(err) {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+    });
+</script>
 {% block scripts %}{% endblock %}
 </body>
 </html>

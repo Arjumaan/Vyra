@@ -16,11 +16,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.views.generic import TemplateView
 from accounts import views as accounts_views
 
 urlpatterns = [
+    path('sw.js', TemplateView.as_view(template_name="sw.js", content_type='application/javascript'), name='sw.js'),
+    path('manifest.json', TemplateView.as_view(template_name="manifest.json", content_type='application/json'), name='manifest.json'),
     path('admin/', admin.site.urls),
-    path('', accounts_views.dashboard, name='dashboard'),
+    path('', accounts_views.landing, name='landing'),
+    path('dashboard/', accounts_views.dashboard, name='dashboard'),
     path('accounts/', include('django.contrib.auth.urls')),
     path('access_vyra/', accounts_views.register, name='register'),
     # Expense Tracker

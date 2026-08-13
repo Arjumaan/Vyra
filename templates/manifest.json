@@ -1,0 +1,19 @@
+{% load static %}
+{
+  "name": "Vyra - Wealth Management",
+  "short_name": "Vyra",
+  "description": "Smart Personal Wealth Management Platform",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8fbff",
+  "theme_color": "#1a1e2d",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "{% static 'images/Vyra_Favicon_BG_REMOVED.png' %}",
+      "sizes": "192x192 512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

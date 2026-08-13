@@ -4,7 +4,7 @@ from savings.models import SavingsAccount
 from investments.models import Investment
 from stocks.models import Stock
 from crypto.models import CryptoHolding
-from banking.models import BankAccount, CreditCard
+from banking.models import Account
 from loans.models import Loan
 from insurance.models import Insurance
 from bills.models import Bill
@@ -18,7 +18,7 @@ import datetime
 def _get_wealth_data(user):
     today = datetime.date.today()
     # Assets
-    bank_balance = BankAccount.objects.filter(user=user).aggregate(Sum('current_balance'))['current_balance__sum'] or 0
+    bank_balance = Account.objects.filter(user=user, category='bank').aggregate(Sum('current_balance'))['current_balance__sum'] or 0
     savings_balance = SavingsAccount.objects.filter(user=user).aggregate(Sum('current_balance'))['current_balance__sum'] or 0
     investment_value = sum(float(i.current_value) for i in Investment.objects.filter(user=user))
     stock_value = sum(s.current_value() for s in Stock.objects.filter(user=user))
@@ -28,7 +28,8 @@ def _get_wealth_data(user):
 
     # Liabilities
     total_loans = float(Loan.objects.filter(user=user).aggregate(Sum('outstanding_balance'))['outstanding_balance__sum'] or 0)
-    total_credit_used = float(CreditCard.objects.filter(user=user).aggregate(Sum('used_credit'))['used_credit__sum'] or 0)
+    cards = Account.objects.filter(user=user, category='card')
+    total_credit_used = sum(float(c.get_outstanding_amount()) for c in cards)
     total_liabilities = total_loans + total_credit_used
 
     net_worth = total_assets - total_liabilities
@@ -123,10 +124,10 @@ def ai_advisor(request):
             'text': f"Great! Your emergency fund covers {int(data['emergency_fund'] / max(monthly_exp, 1))} months of expenses."})
 
     # Credit utilization
-    credit_cards = CreditCard.objects.filter(user=user)
+    credit_cards = Account.objects.filter(user=user, category='card')
     if credit_cards.exists():
-        total_limit = sum(float(c.credit_limit) for c in credit_cards)
-        total_used = sum(float(c.used_credit) for c in credit_cards)
+        total_limit = sum(float(c.credit_limit) for c in credit_cards if c.credit_limit)
+        total_used = sum(float(c.get_outstanding_amount()) for c in credit_cards)
         util = (total_used / total_limit * 100) if total_limit > 0 else 0
         if util > 40:
             insights.append({'type': 'danger', 'icon': 'bi-credit-card',
