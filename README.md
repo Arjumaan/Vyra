@@ -1,6 +1,7 @@
 <div align="center">
 
-# 💎 Vyra Wealth OS 
+<img src="assets/banner.png" alt="Vyra Wealth OS Banner" width="800">
+
 **The Open-Source, AI-Powered Personal Wealth Operating System**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
