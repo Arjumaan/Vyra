@@ -6,6 +6,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/)
 [![Django](https://img.shields.io/badge/Django-6.0-green.svg)](https://www.djangoproject.com/)
+[![CI](https://github.com/Arjumaan/Vyra/actions/workflows/ci.yml/badge.svg)](https://github.com/Arjumaan/Vyra/actions/workflows/ci.yml)
 [![Contributions Welcome](https://img.shields.io/badge/Contributions-Welcome-brightgreen.svg)](#contributing)
 
 [Features](#-features) • [Installation](#-installation) • [Architecture](#-architecture) • [Contributing](#-contributing)
@@ -29,12 +30,22 @@ Vyra gives you absolute control over your money, utilizing an AI-powered coach t
 - **🤖 AI Intelligence Layer:** Built-in AI coach generating monthly reports and financial insights.
 - **📜 Legacy Vault:** Secure estate planner with document encryption.
 
-## 🚀 Installation
+## 🚀 Quickstart (Docker)
+The easiest way to get Vyra running is via Docker.
+
+```bash
+git clone https://github.com/Arjumaan/Vyra.git
+cd Vyra
+docker-compose up --build
+```
+Vyra will now be accessible at `http://localhost:8000`.
+
+## 🛠 Local Setup (Without Docker)
 
 **1. Clone the repository**
 ```bash
-git clone https://github.com/yourusername/vyra-wealth-os.git
-cd vyra-wealth-os
+git clone https://github.com/Arjumaan/Vyra.git
+cd Vyra
 ```
 
 **2. Set up Virtual Environment**
@@ -59,8 +70,18 @@ python manage.py runserver
 ## 🏗 Architecture
 Vyra is designed as a **Monolithic Modular** architecture consisting of 31 fully fleshed-out Django apps. Please see our [DOCUMENTATION.md](DOCUMENTATION.md) and [BLUEPRINT](VYRA_WEALTH_OS_BLUEPRINT.md) for a deep dive into the system schemas and models.
 
+## 🌍 The Vision: Financial Literacy for Everyone
+Vyra is not just an application—it's a movement to democratize wealth management. Financial tools of this caliber are traditionally locked behind expensive wealth managers or enterprise software. Our goal is to make **top-tier financial strategy available to anyone with a computer**. We believe that true financial independence starts with clarity.
+
+## 🧩 The Plugin Ecosystem & Localizations
+Vyra is built on a highly modular architecture (31 independent apps). We are actively looking for contributors to build:
+- **Regional Modules:** specific tax calculators (e.g., US 401ks, UK ISAs, Indian Provident Funds).
+- **Localizations:** translations for Spanish, Mandarin, Hindi, and more.
+- **Custom Engines:** new data sources, stock tickers, crypto syncs, and advanced reporting.
+
 ## 🤝 Contributing
-Vyra is community-driven! We would love for you to contribute to Vyra. Please read our [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
+Vyra is community-driven! We would love for you to contribute. Check out our ["Good First Issues"](https://github.com/Arjumaan/Vyra/issues) to get started! 
+Please read our [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
 
 ## 📝 License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
