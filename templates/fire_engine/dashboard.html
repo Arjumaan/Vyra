@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}FIRE & Retirement Engine | Vyra OS{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div>
+        <h1 class="page-title"><i class="bi bi-fire text-warning"></i> FIRE & Retirement Engine</h1>
+        <p class="page-subtitle">Project your future wealth and determine exactly when you can reach Financial Independence.</p>
+    </div>
+</div>
+
+<!-- Core Metrics Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon warning"><i class="bi bi-bullseye"></i></div>
+            <div class="stat-label">FIRE Number</div>
+            <div class="stat-value warning">₹{{ cache.calculated_fire_number }}</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon primary"><i class="bi bi-hourglass-split"></i></div>
+            <div class="stat-label">Years to FIRE</div>
+            <div class="stat-value primary">{{ cache.years_to_fire }} Years</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon success"><i class="bi bi-piggy-bank"></i></div>
+            <div class="stat-label">Savings Rate</div>
+            <div class="stat-value success">{{ cache.current_savings_rate }}%</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon info"><i class="bi bi-shield-check"></i></div>
+            <div class="stat-label">Safe Withdrawal</div>
+            <div class="stat-value info">{{ profile.safe_withdrawal_rate }}%</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <!-- Milestones Section -->
+    <div class="col-lg-8">
+        <div class="chart-wrap h-100">
+            <div class="chart-title"><i class="bi bi-flag"></i> FIRE Milestones Tracker</div>
+            
+            <div class="p-4">
+                <!-- Lean FIRE -->
+                <div class="d-flex justify-content-between align-items-end mb-1">
+                    <h5 class="fw-bold mb-0">Lean FIRE</h5>
+                    <span class="text-muted small">Target: ₹{{ lean_fire|floatformat:2 }}</span>
+                </div>
+                <p class="text-muted small mb-2">Covers your basic survival living expenses (70% of target).</p>
+                <div class="progress mb-4" style="height: 25px; border-radius: 12px; background-color: var(--bg-neu); box-shadow: inset var(--shadow-neu);">
+                    <div class="progress-bar bg-info progress-bar-striped progress-bar-animated" role="progressbar" style="width: {{ lean_progress }}%;">{{ lean_progress }}%</div>
+                </div>
+
+                <!-- Standard FIRE -->
+                <div class="d-flex justify-content-between align-items-end mb-1 mt-4">
+                    <h5 class="fw-bold mb-0">Standard FIRE</h5>
+                    <span class="text-muted small">Target: ₹{{ cache.calculated_fire_number|floatformat:2 }}</span>
+                </div>
+                <p class="text-muted small mb-2">Maintains your current lifestyle comfortably (100% of target).</p>
+                <div class="progress mb-4" style="height: 25px; border-radius: 12px; background-color: var(--bg-neu); box-shadow: inset var(--shadow-neu);">
+                    <div class="progress-bar bg-primary progress-bar-striped progress-bar-animated" role="progressbar" style="width: {{ standard_progress }}%;">{{ standard_progress }}%</div>
+                </div>
+
+                <!-- Fat FIRE -->
+                <div class="d-flex justify-content-between align-items-end mb-1 mt-4">
+                    <h5 class="fw-bold mb-0">Fat FIRE</h5>
+                    <span class="text-muted small">Target: ₹{{ fat_fire|floatformat:2 }}</span>
+                </div>
+                <p class="text-muted small mb-2">Luxurious retirement with a massive buffer (130% of target).</p>
+                <div class="progress mb-4" style="height: 25px; border-radius: 12px; background-color: var(--bg-neu); box-shadow: inset var(--shadow-neu);">
+                    <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" role="progressbar" style="width: {{ fat_progress }}%;">{{ fat_progress }}%</div>
+                </div>
+                
+                <div class="mt-5 p-4 rounded text-center" style="background-color: var(--bg-color); box-shadow: inset var(--shadow-neu);">
+                    <h6 class="fw-bold text-primary mb-1">Current Logged Net Worth</h6>
+                    <h3 class="fw-bold mb-0">₹{{ current_net_worth|floatformat:2 }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Simulation Controls -->
+    <div class="col-lg-4">
+        <div class="chart-wrap h-100">
+            <div class="chart-title"><i class="bi bi-sliders"></i> Simulation Variables</div>
+            
+            <form method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label text-muted small fw-bold">Annual Income Override (₹)</label>
+                    <input type="number" step="0.01" class="form-control" name="income" value="{{ profile.manual_annual_income|default_if_none:'' }}" placeholder="Uses actual data if blank">
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label text-muted small fw-bold">Annual Expenses Override (₹)</label>
+                    <input type="number" step="0.01" class="form-control" name="expenses" value="{{ profile.manual_annual_expenses|default_if_none:'' }}" placeholder="Uses actual data if blank">
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label text-muted small fw-bold">Current Net Worth Override (₹)</label>
+                    <input type="number" step="0.01" class="form-control" name="net_worth" value="{{ profile.manual_current_net_worth|default_if_none:'' }}" placeholder="Uses actual data if blank">
+                </div>
+                
+                <div class="mb-4">
+                    <label class="form-label text-muted small fw-bold">Safe Withdrawal Rate (%)</label>
+                    <select class="form-select" name="swr">
+                        <option value="3.00" {% if profile.safe_withdrawal_rate == 3.00 %}selected{% endif %}>3.00% (Very Conservative)</option>
+                        <option value="3.50" {% if profile.safe_withdrawal_rate == 3.50 %}selected{% endif %}>3.50% (Conservative)</option>
+                        <option value="4.00" {% if profile.safe_withdrawal_rate == 4.00 %}selected{% endif %}>4.00% (Standard)</option>
+                        <option value="4.50" {% if profile.safe_withdrawal_rate == 4.50 %}selected{% endif %}>4.50% (Aggressive)</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="neu-btn neu-btn-primary w-100"><i class="bi bi-calculator"></i> Recalculate Projection</button>
+            </form>
+            
+            <div class="mt-4 p-3 rounded" style="background-color: var(--bg-color);">
+                <p class="mb-0 text-muted small">
+                    <i class="bi bi-info-circle me-1 text-primary"></i> The AI Wealth Copilot uses a constant <strong>{{ profile.expected_investment_return }}%</strong> gross return and <strong>{{ profile.inflation_rate }}%</strong> inflation rate for these projections.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+    /* Styling for generated fields */
+    input, select, textarea {
+        display: block;
+        width: 100%;
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+        font-weight: 500;
+        line-height: 1.5;
+        color: var(--text-primary);
+        background-color: var(--bg-neu);
+        background-clip: padding-box;
+        border: none;
+        border-radius: 12px;
+        box-shadow: inset var(--shadow-neu);
+        transition: box-shadow .2s;
+    }
+    input:focus, select:focus, textarea:focus {
+        outline: none;
+        box-shadow: inset 3px 3px 6px #cbced1, inset -3px -3px 6px #ffffff, 0 0 0 3px rgba(74,144,226,0.2);
+    }
+</style>
+{% endblock %}

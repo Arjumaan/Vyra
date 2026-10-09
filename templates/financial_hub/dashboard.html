@@ -1,0 +1,367 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Vyra - Unified Wealth OS Hub{% endblock %}
+{% block head %}
+<style>
+/* Sophisticated Premium Neumorphism & Glassmorphism Hybrid */
+:root {
+    --bg-color: #e0e5ec;
+    --text-main: #2d3748;
+    --text-muted: #718096;
+    --card-shadow-light: rgba(255, 255, 255, 0.7);
+    --card-shadow-dark: rgba(163, 177, 198, 0.6);
+}
+
+body {
+    background-color: var(--bg-color);
+    font-family: 'Inter', sans-serif;
+}
+
+/* Premium Card */
+.premium-card {
+    background: var(--bg-color);
+    border-radius: 24px;
+    box-shadow: 10px 10px 20px var(--card-shadow-dark), 
+                -10px -10px 20px var(--card-shadow-light);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 1;
+}
+.premium-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 15px 15px 30px var(--card-shadow-dark), 
+                -15px -15px 30px var(--card-shadow-light);
+}
+
+/* Master Net Worth Card - Glassmorphic / Gradient Hybrid */
+.master-card {
+    background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+    border-radius: 30px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2), 
+                inset 0 1px 0 rgba(255,255,255,0.1);
+    padding: 3.5rem 2rem;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+.master-card::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 60%);
+    transform: rotate(30deg);
+    pointer-events: none;
+}
+.master-card .bg-icon {
+    position: absolute;
+    right: -20px;
+    bottom: -40px;
+    font-size: 20rem;
+    color: rgba(255,255,255,0.03);
+    transform: rotate(-15deg);
+}
+.net-worth-value {
+    font-size: 4.5rem;
+    font-weight: 900;
+    background: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -2px;
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+}
+
+/* Typography & Badges */
+.hub-title {
+    font-weight: 900;
+    letter-spacing: -1px;
+    color: var(--text-main);
+}
+.module-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 65px; height: 65px;
+    border-radius: 20px;
+    background: var(--bg-color);
+    box-shadow: inset 5px 5px 10px var(--card-shadow-dark), 
+                inset -5px -5px 10px var(--card-shadow-light);
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+}
+.value-display {
+    font-size: 2.2rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+.value-display.small-metric {
+    font-size: 1.5rem;
+}
+
+/* Mini details */
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+}
+.detail-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+.detail-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+.detail-value {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+/* Button */
+.btn-action {
+    background: var(--bg-color);
+    color: var(--text-main);
+    border: none;
+    border-radius: 14px;
+    padding: 12px 24px;
+    font-weight: 700;
+    width: 100%;
+    box-shadow: 5px 5px 10px var(--card-shadow-dark), 
+                -5px -5px 10px var(--card-shadow-light);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 15px;
+}
+.btn-action:hover {
+    box-shadow: inset 5px 5px 10px var(--card-shadow-dark), 
+                inset -5px -5px 10px var(--card-shadow-light);
+    color: #3182ce;
+}
+</style>
+{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <!-- Header -->
+    <div class="text-center mb-5">
+        <div class="d-inline-block mb-3 p-3 rounded-circle" style="background:var(--bg-color); box-shadow: 5px 5px 10px var(--card-shadow-dark), -5px -5px 10px var(--card-shadow-light);">
+            <i class="bi bi-infinity fs-1" style="color: #3182ce;"></i>
+        </div>
+        <h1 class="hub-title mb-2">Wealth OS Hub</h1>
+        <p class="text-muted fs-5 fw-medium">Unified aggregation of all your financial systems.</p>
+    </div>
+
+    <!-- Master Net Worth (Hero) -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-xl-10">
+            <div class="master-card text-center">
+                <i class="bi bi-globe2 bg-icon"></i>
+                <h6 class="text-uppercase fw-bold tracking-wide mb-3" style="color: #a0aec0; letter-spacing: 2px;">Total Unified Net Worth</h6>
+                <div class="net-worth-value currency-format">{{ net_worth|floatformat:2 }}</div>
+                
+                <div class="row justify-content-center mt-4 position-relative" style="z-index: 2;">
+                    <div class="col-md-5 mb-3 mb-md-0">
+                        <div class="p-4 rounded-4" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(10px);">
+                            <div class="text-white-50 text-uppercase small fw-bold mb-2">Total Combined Assets</div>
+                            <div class="fs-3 fw-bold text-success"><i class="bi bi-arrow-up-right me-2"></i><span class="currency-format">{{ total_assets|floatformat:2 }}</span></div>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="p-4 rounded-4" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(10px);">
+                            <div class="text-white-50 text-uppercase small fw-bold mb-2">Total Combined Liabilities</div>
+                            <div class="fs-3 fw-bold text-danger"><i class="bi bi-arrow-down-right me-2"></i><span class="currency-format">{{ total_debt|floatformat:2 }}</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- The OS Modules Grid -->
+    <div class="row g-4">
+        
+        <!-- Liquidity & Banking -->
+        <div class="col-xl-4 col-md-6">
+            <div class="premium-card h-100 d-flex flex-column">
+                <div class="text-center mb-4">
+                    <div class="module-badge text-primary"><i class="bi bi-wallet2"></i></div>
+                    <h5 class="fw-bold mb-2" style="color:var(--text-main);">Global Liquidity</h5>
+                    <div class="value-display mb-2 text-primary currency-format">{{ total_liquidity|floatformat:2 }}</div>
+                </div>
+                <div class="flex-grow-1">
+                    <div class="detail-item">
+                        <span class="detail-label">Cashflow (In - Out)</span>
+                        <span class="detail-value {% if liquid_cash >= 0 %}text-success{% else %}text-danger{% endif %} currency-format">{{ liquid_cash|floatformat:2 }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Bank Accounts</span>
+                        <span class="detail-value text-primary currency-format">{{ bank_balance|floatformat:2 }}</span>
+                    </div>
+                </div>
+                <a href="{% url 'dashboard' %}" class="btn-action text-center"><i class="bi bi-bank me-2"></i>Cashflow & Banking</a>
+            </div>
+        </div>
+
+        <!-- Market Portfolio (Savings, Crypto, Stocks) -->
+        <div class="col-xl-4 col-md-6">
+            <div class="premium-card h-100 d-flex flex-column">
+                <div class="text-center mb-4">
+                    <div class="module-badge" style="color: #667eea;"><i class="bi bi-graph-up-arrow"></i></div>
+                    <h5 class="fw-bold mb-2" style="color:var(--text-main);">Market Portfolio</h5>
+                    <div class="value-display mb-2 currency-format" style="color: #667eea;">{{ market_portfolio_value|floatformat:2 }}</div>
+                </div>
+                <div class="flex-grow-1">
+                    <div class="detail-item">
+                        <span class="detail-label">Savings & Inv.</span>
+                        <span class="detail-value currency-format">{{ savings|add:investments|floatformat:2 }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Stocks</span>
+                        <span class="detail-value currency-format">{{ stocks|floatformat:2 }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Crypto</span>
+                        <span class="detail-value currency-format">{{ crypto|floatformat:2 }}</span>
+                    </div>
+                </div>
+                <!-- Assuming there's a portfolio or investments link, we can just link to one of them, or a unified markets page -->
+                <!-- <a href="#" class="btn-action text-center"><i class="bi bi-pie-chart me-2"></i>View Portfolio</a> -->
+            </div>
+        </div>
+
+        <!-- Physical Assets (Real Estate & Core Assets) -->
+        <div class="col-xl-4 col-md-6">
+            <div class="premium-card h-100 d-flex flex-column">
+                <div class="text-center mb-4">
+                    <div class="module-badge text-info"><i class="bi bi-house-door"></i></div>
+                    <h5 class="fw-bold mb-2" style="color:var(--text-main);">Hard Assets</h5>
+                    <div class="value-display mb-2 text-info currency-format">{{ base_assets_value|add:real_estate_equity|floatformat:2 }}</div>
+                </div>
+                <div class="flex-grow-1">
+                    <div class="detail-item">
+                        <span class="detail-label">Real Estate Equity</span>
+                        <span class="detail-value currency-format">{{ real_estate_equity|floatformat:2 }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Valuables & Vehicles</span>
+                        <span class="detail-value currency-format">{{ base_assets_value|floatformat:2 }}</span>
+                    </div>
+                </div>
+                <a href="{% url 'real_estate_dashboard' %}" class="btn-action text-center"><i class="bi bi-building me-2"></i>Manage Properties</a>
+            </div>
+        </div>
+
+        <!-- Business & Income -->
+        <div class="col-xl-4 col-md-6">
+            <div class="premium-card h-100 d-flex flex-column">
+                <div class="text-center flex-grow-1">
+                    <div class="module-badge text-success"><i class="bi bi-briefcase"></i></div>
+                    <h5 class="fw-bold mb-2" style="color:var(--text-main);">Business Ledger</h5>
+                    <div class="value-display mb-2 text-success currency-format">{{ business_profit|floatformat:2 }}</div>
+                    <p class="text-muted small mb-4 fw-medium">Net profits generated from your side-hustles and active businesses.</p>
+                </div>
+                <a href="{% url 'business_dashboard' %}" class="btn-action text-center"><i class="bi bi-journal-text me-2"></i>Open Ledger</a>
+            </div>
+        </div>
+
+        <!-- Global Liabilities (Debt, Loans, Taxes) -->
+        <div class="col-xl-4 col-md-6">
+            <div class="premium-card h-100 d-flex flex-column">
+                <div class="text-center mb-4">
+                    <div class="module-badge text-danger"><i class="bi bi-scissors"></i></div>
+                    <h5 class="fw-bold mb-2" style="color:var(--text-main);">Global Liabilities</h5>
+                    <div class="value-display mb-2 text-danger currency-format">{{ total_debt|floatformat:2 }}</div>
+                </div>
+                <div class="flex-grow-1">
+                    <div class="detail-item">
+                        <span class="detail-label">Active Debt</span>
+                        <span class="detail-value text-danger currency-format">{{ base_debt|floatformat:2 }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Loans (EMI)</span>
+                        <span class="detail-value text-danger currency-format">{{ total_loans|floatformat:2 }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Tax Liabilities</span>
+                        <span class="detail-value text-danger currency-format">{{ tax_liabilities|floatformat:2 }}</span>
+                    </div>
+                </div>
+                <a href="{% url 'debt_dashboard' %}" class="btn-action text-center"><i class="bi bi-piggy-bank me-2"></i>Optimize Debt</a>
+            </div>
+        </div>
+
+        <!-- FIRE Engine -->
+        <div class="col-xl-4 col-md-6">
+            <div class="premium-card h-100 d-flex flex-column">
+                <div class="text-center flex-grow-1">
+                    <div class="module-badge" style="color: #ed8936;"><i class="bi bi-fire"></i></div>
+                    <h5 class="fw-bold mb-2" style="color:var(--text-main);">FIRE Engine</h5>
+                    {% if fire_profile %}
+                        <div class="value-display mb-2" style="color: #ed8936;">Age {{ fire_profile.target_retirement_age }}</div>
+                        <p class="text-muted small mb-4 fw-medium">Target age for complete financial independence.</p>
+                    {% else %}
+                        <div class="value-display mb-2 text-muted">-</div>
+                        <p class="text-muted small mb-4 fw-medium">Setup your FIRE profile to see your trajectory.</p>
+                    {% endif %}
+                </div>
+                <a href="{% url 'fire_dashboard' %}" class="btn-action text-center"><i class="bi bi-rocket-takeoff me-2"></i>FIRE Simulator</a>
+            </div>
+        </div>
+
+        <!-- Legacy Planner -->
+        <div class="col-xl-12">
+            <div class="premium-card">
+                <div class="d-flex align-items-center flex-wrap gap-4">
+                    <div class="module-badge mb-0" style="color: #9f7aea; flex-shrink: 0;"><i class="bi bi-shield-lock"></i></div>
+                    <div class="flex-grow-1">
+                        <h5 class="fw-bold mb-1" style="color:var(--text-main);">Digital Legacy & Dead Man's Switch</h5>
+                        {% if dms and dms.is_enabled %}
+                            <p class="text-success small mb-0 fw-bold"><i class="bi bi-check-circle-fill me-1"></i> Protected & Active</p>
+                            <p class="text-muted small mb-0 mt-1">Your core assets and documentation are securely configured for inheritance transfer.</p>
+                        {% else %}
+                            <p class="text-muted small mb-0 fw-bold"><i class="bi bi-exclamation-circle me-1"></i> Vulnerable</p>
+                            <p class="text-muted small mb-0 mt-1">Dead Man's Switch is inactive. Set it up to protect your family's future access.</p>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <a href="{% url 'legacy_dashboard' %}" class="btn-action mt-0"><i class="bi bi-safe me-2"></i>Manage Legacy</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+// Format currency values dynamically on the client side
+document.addEventListener('DOMContentLoaded', function() {
+    const currencyElements = document.querySelectorAll('.currency-format');
+    currencyElements.forEach(el => {
+        let numberText = el.textContent.trim();
+        const num = parseFloat(numberText);
+        if (!isNaN(num)) {
+            // Format as Indian Rupee style with commas
+            let formatted = new Intl.NumberFormat('en-IN', {
+                style: 'currency',
+                currency: 'INR',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(num);
+            
+            el.textContent = formatted;
+        }
+    });
+});
+</script>
+{% endblock %}

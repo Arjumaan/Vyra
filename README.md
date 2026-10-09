@@ -1,45 +1,66 @@
-# Vyra - Smart Personal Expense Tracker
+<div align="center">
 
-Vyra is a web-based personal finance management application designed to help users track their income, monitor expenses, set budgets, and gain valuable financial insights. Developed using Django 6.0 and Bootstrap 5.
+# 💎 Vyra Wealth OS 
+**The Open-Source, AI-Powered Personal Wealth Operating System**
 
-## Features
-- **User Authentication:** Secure registration and login.
-- **Dashboard:** At-a-glance summary of income, expenses, savings, and budget usage.
-- **Income & Expense Tracking:** Add, edit, delete, and categorize your transactions.
-- **Budget Management:** Set monthly budget limits and track your progress.
-- **Reports:** Visual insights into your spending habits with Chart.js pie and line charts.
-- **AI-Powered Insights:** Rule-based smart insights and alerts on your financial health.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/)
+[![Django](https://img.shields.io/badge/Django-6.0-green.svg)](https://www.djangoproject.com/)
+[![Contributions Welcome](https://img.shields.io/badge/Contributions-Welcome-brightgreen.svg)](#contributing)
 
-## Installation & Setup
+[Features](#-features) • [Installation](#-installation) • [Architecture](#-architecture) • [Contributing](#-contributing)
 
-1. **Clone or Extract the Project**
-2. **Create a Virtual Environment:**
-   ```bash
-   python -m venv venv
-   ```
-3. **Activate the Virtual Environment:**
-   - Windows: `.\venv\Scripts\activate`
-   - Mac/Linux: `source venv/bin/activate`
-4. **Install Requirements:**
-   ```bash
-   pip install django
-   ```
-5. **Apply Migrations:**
-   ```bash
-   python manage.py migrate
-   ```
-6. **Create a Superuser (Optional, for Admin Access):**
-   ```bash
-   python manage.py createsuperuser
-   ```
-7. **Run the Development Server:**
-   ```bash
-   python manage.py runserver
-   ```
-8. **Access the Application:** Open your browser and go to `http://127.0.0.1:8000`
-
-## Documentation
-Full project documentation (including architecture, DFD, schemas, etc.) is available in the generated artifacts.
+</div>
 
 ---
-*Developed as a college mini-project.*
+
+## 🌟 About Vyra
+
+**Vyra** is not just an expense tracker—it's a comprehensive **Wealth Operating System**. Built with Django, it tracks every aspect of your financial life. From daily expenses and dynamic budgets to real estate yields, debt destruction, stock & crypto portfolios, and FIRE (Financial Independence, Retire Early) planning.
+
+Vyra gives you absolute control over your money, utilizing an AI-powered coach to provide actionable insights.
+
+## ✨ Features
+
+- **🏦 Core Finance:** Multi-currency engine, wallet & bank tracking, daily cash flows.
+- **📈 Wealth & Assets:** Portfolios for Stocks, ETFs, Crypto, and Real Estate tracking with yield metrics.
+- **🧨 Debt Destruction:** Strategy simulators for Debt Snowball & Avalanche methods.
+- **🔥 FIRE Engine:** Dynamic simulator for Lean, Fat, and Barista FIRE retirement models.
+- **🤖 AI Intelligence Layer:** Built-in AI coach generating monthly reports and financial insights.
+- **📜 Legacy Vault:** Secure estate planner with document encryption.
+
+## 🚀 Installation
+
+**1. Clone the repository**
+```bash
+git clone https://github.com/yourusername/vyra-wealth-os.git
+cd vyra-wealth-os
+```
+
+**2. Set up Virtual Environment**
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: .\venv\Scripts\activate
+```
+
+**3. Install Dependencies**
+```bash
+pip install -r requirements.txt
+```
+*(If `requirements.txt` is missing, just install `django` and related libs: `pip install django`)*
+
+**4. Migrate & Run**
+```bash
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py runserver
+```
+
+## 🏗 Architecture
+Vyra is designed as a **Monolithic Modular** architecture consisting of 31 fully fleshed-out Django apps. Please see our [DOCUMENTATION.md](DOCUMENTATION.md) and [BLUEPRINT](VYRA_WEALTH_OS_BLUEPRINT.md) for a deep dive into the system schemas and models.
+
+## 🤝 Contributing
+Vyra is community-driven! We would love for you to contribute to Vyra. Please read our [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
+
+## 📝 License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

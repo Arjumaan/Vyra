@@ -44,8 +44,13 @@
             <!-- Overview -->
             <div class="sidebar-section">Overview</div>
             <a href="{% url 'dashboard' %}" class="{% if request.path == '/' %}active{% endif %}"><i class="bi bi-speedometer2"></i> Dashboard</a>
-            <a href="{% url 'financial_hub' %}" class="{% if 'wealth' in request.path and 'networth' not in request.path and 'advisor' not in request.path %}active{% endif %}"><i class="bi bi-bank2"></i> Financial Hub</a>
+            <a href="{% url 'wealth_os_hub' %}" class="{% if 'hub' in request.path %}active{% endif %}"><i class="bi bi-globe2 text-warning"></i> Wealth OS Hub</a>
             <a href="{% url 'net_worth' %}" class="{% if 'networth' in request.path %}active{% endif %}"><i class="bi bi-graph-up-arrow"></i> Net Worth</a>
+            <a href="{% url 'fire_dashboard' %}" class="{% if 'fire' in request.path %}active{% endif %}"><i class="bi bi-fire text-warning"></i> FIRE Engine</a>
+            <a href="{% url 'debt_dashboard' %}" class="{% if 'debt' in request.path %}active{% endif %}"><i class="bi bi-scissors text-danger"></i> Debt Planner</a>
+            <a href="{% url 'real_estate_dashboard' %}" class="{% if 'real-estate' in request.path %}active{% endif %}"><i class="bi bi-building text-info"></i> Real Estate</a>
+            <a href="{% url 'business_dashboard' %}" class="{% if 'business' in request.path %}active{% endif %}"><i class="bi bi-briefcase text-success"></i> Business Ledger</a>
+            <a href="{% url 'legacy_dashboard' %}" class="{% if 'legacy' in request.path %}active{% endif %}"><i class="bi bi-shield-lock text-primary"></i> Legacy Planner</a>
             <a href="{% url 'asset_list' %}" class="{% if 'assets' in request.path %}active{% endif %}"><i class="bi bi-houses"></i> Property & Assets</a>
 
             <hr class="sidebar-divider">
@@ -120,7 +125,7 @@
                 Welcome back, <strong>{{ user.get_full_name|default:user.username }}</strong>
             </div>
             <div class="d-flex align-items-center gap-2">
-                <a href="{% url 'financial_hub' %}" class="neu-btn neu-btn-sm d-none d-md-inline-flex"><i class="bi bi-bank2"></i> Financial Hub</a>
+                <a href="{% url 'wealth_os_hub' %}" class="neu-btn neu-btn-sm d-none d-md-inline-flex"><i class="bi bi-globe2 text-warning"></i> Wealth OS Hub</a>
                 <a href="{% url 'ai_chat' %}" class="neu-btn neu-btn-primary neu-btn-sm"><i class="bi bi-robot"></i> AI Coach</a>
                 <!-- Mobile menu toggle -->
                 <button class="neu-btn-icon d-md-none" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar"><i class="bi bi-list fs-5"></i></button>
@@ -153,7 +158,7 @@
     <div class="offcanvas-body p-0">
         <nav class="py-2">
             <a href="{% url 'dashboard' %}" class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none" style="color:var(--text-secondary)"><i class="bi bi-speedometer2"></i> Dashboard</a>
-            <a href="{% url 'financial_hub' %}" class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none" style="color:var(--text-secondary)"><i class="bi bi-bank2"></i> Financial Hub</a>
+            <a href="{% url 'wealth_os_hub' %}" class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none" style="color:var(--warning)"><i class="bi bi-globe2"></i> Wealth OS Hub</a>
             <a href="{% url 'asset_list' %}" class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none" style="color:var(--text-secondary)"><i class="bi bi-houses"></i> Assets</a>
             <a href="{% url 'income_list' %}" class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none" style="color:var(--text-secondary)"><i class="bi bi-arrow-down-circle"></i> Income</a>
             <a href="{% url 'expense_list' %}" class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none" style="color:var(--text-secondary)"><i class="bi bi-arrow-up-circle"></i> Expenses</a>

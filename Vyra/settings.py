@@ -67,6 +67,12 @@ INSTALLED_APPS = [
     'journal',
     'ai',
     'backup',
+    'fire_engine',
+    'debt_manager',
+    'real_estate',
+    'business_ledger',
+    'legacy_planner',
+    'financial_hub',
 ]
 
 MIDDLEWARE = [

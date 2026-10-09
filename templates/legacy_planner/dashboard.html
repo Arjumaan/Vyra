@@ -1,0 +1,335 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Vyra - Legacy & Estate Planner{% endblock %}
+{% block extra_css %}
+<style>
+.neu-card {
+    background: #e0e5ec;
+    border-radius: 20px;
+    box-shadow: 9px 9px 16px rgb(163,177,198,0.6), -9px -9px 16px rgba(255,255,255, 0.5);
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+.neu-btn {
+    background: #e0e5ec;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 5px 5px 10px rgb(163,177,198,0.6), -5px -5px 10px rgba(255,255,255, 0.5);
+    padding: 10px 20px;
+    color: #4a5568;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+.neu-btn:hover {
+    box-shadow: inset 5px 5px 10px rgb(163,177,198,0.6), inset -5px -5px 10px rgba(255,255,255, 0.5);
+    color: #3182ce;
+}
+.neu-btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 5px 5px 15px rgba(118, 75, 162, 0.4);
+}
+.neu-btn-primary:hover {
+    box-shadow: inset 5px 5px 10px rgba(0,0,0,0.1), inset -5px -5px 10px rgba(255,255,255,0.2);
+    color: white;
+}
+.neu-btn-danger {
+    background: linear-gradient(135deg, #f56565 0%, #c53030 100%);
+    color: white;
+    box-shadow: 5px 5px 15px rgba(245, 101, 101, 0.4);
+}
+.neu-input {
+    background: #e0e5ec;
+    border: none;
+    border-radius: 10px;
+    box-shadow: inset 5px 5px 10px rgb(163,177,198,0.6), inset -5px -5px 10px rgba(255,255,255, 0.5);
+    padding: 12px;
+    width: 100%;
+}
+.neu-input:focus {
+    outline: none;
+    box-shadow: inset 7px 7px 14px rgb(163,177,198,0.7), inset -7px -7px 14px rgba(255,255,255, 0.6);
+}
+.pulse-active {
+    animation: pulse-green 2s infinite;
+}
+@keyframes pulse-green {
+    0% { box-shadow: 0 0 0 0 rgba(72, 187, 120, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(72, 187, 120, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(72, 187, 120, 0); }
+}
+</style>
+{% endblock %}
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-0 text-primary"><i class="bi bi-shield-lock"></i> Digital Legacy & Estate Planner</h2>
+            <p class="text-muted">Securely manage beneficiaries, trusted contacts, and automated data release.</p>
+        </div>
+        <a href="{% url 'document_list' %}" class="neu-btn text-decoration-none">
+            <i class="bi bi-folder-symlink text-primary"></i> Open Vault
+        </a>
+    </div>
+
+    <div class="row">
+        <!-- Dead Man's Switch -->
+        <div class="col-lg-4 mb-4">
+            <div class="neu-card h-100 position-relative overflow-hidden">
+                <div class="d-flex justify-content-between align-items-start mb-4">
+                    <h5 class="fw-bold mb-0"><i class="bi bi-heart-pulse-fill text-danger"></i> Dead Man's Switch</h5>
+                    {% if dms.is_enabled %}
+                        <span class="badge bg-success rounded-pill pulse-active">ACTIVE</span>
+                    {% else %}
+                        <span class="badge bg-secondary rounded-pill">DISABLED</span>
+                    {% endif %}
+                </div>
+                
+                <p class="text-muted small">
+                    When enabled, if you do not check in for {{ dms.check_in_frequency_days }} days, a {{ dms.grace_period_days }}-day grace period begins. If unresolved, your secure Vault and Legacy Instructions will be released to your Legacy Executors.
+                </p>
+                
+                <div class="mb-4">
+                    <small class="text-muted d-block fw-bold">Last Check-In:</small>
+                    <span class="fs-5 fw-bold">{{ dms.last_check_in|date:"M d, Y H:i" }}</span>
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <form method="POST" action="{% url 'legacy_dashboard' %}" class="d-grid">
+                        {% csrf_token %}
+                        <input type="hidden" name="check_in" value="1">
+                        <button type="submit" class="neu-btn neu-btn-primary mb-2" {% if not dms.is_enabled %}disabled{% endif %}>
+                            <i class="bi bi-fingerprint"></i> Check In Now
+                        </button>
+                    </form>
+                    <button class="neu-btn" data-bs-toggle="modal" data-bs-target="#configureDmsModal">
+                        <i class="bi bi-gear"></i> Configure Switch
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trusted Contacts -->
+        <div class="col-lg-8 mb-4">
+            <div class="neu-card h-100">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="fw-bold mb-0"><i class="bi bi-people-fill text-primary"></i> Trusted Contacts</h5>
+                    <button class="neu-btn" data-bs-toggle="modal" data-bs-target="#addContactModal">
+                        <i class="bi bi-plus"></i> Add Contact
+                    </button>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-borderless align-middle">
+                        <thead>
+                            <tr class="text-muted border-bottom" style="border-color: rgba(0,0,0,0.05)!important;">
+                                <th>Name</th>
+                                <th>Relationship</th>
+                                <th>Contact Info</th>
+                                <th>Access Role</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for c in contacts %}
+                            <tr>
+                                <td class="fw-bold">{{ c.name }}</td>
+                                <td>{{ c.relationship }}</td>
+                                <td>
+                                    <div><i class="bi bi-envelope text-muted"></i> {{ c.email }}</div>
+                                    {% if c.phone %}<div><i class="bi bi-telephone text-muted"></i> {{ c.phone }}</div>{% endif %}
+                                </td>
+                                <td>
+                                    {% if c.role == 'LEGACY' %}
+                                        <span class="badge bg-primary bg-opacity-25 text-primary rounded-pill">Legacy Executor</span>
+                                    {% elif c.role == 'EMERGENCY' %}
+                                        <span class="badge bg-danger bg-opacity-25 text-danger rounded-pill">Emergency</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary bg-opacity-25 text-secondary rounded-pill">View Only</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center py-4 text-muted">No trusted contacts added yet.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Beneficiaries -->
+        <div class="col-12 mb-4">
+            <div class="neu-card">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h5 class="fw-bold mb-0"><i class="bi bi-gift-fill text-success"></i> Beneficiaries & Asset Allocation</h5>
+                        <small class="text-muted">Disclaimer: This is for organizational planning and does not replace a legally binding Will or Trust.</small>
+                    </div>
+                    <button class="neu-btn" data-bs-toggle="modal" data-bs-target="#addBeneficiaryModal" {% if total_allocation >= 100 %}disabled title="100% allocated"{% endif %}>
+                        <i class="bi bi-plus"></i> Add Beneficiary
+                    </button>
+                </div>
+                
+                <div class="progress mb-4" style="height: 10px; background: rgba(0,0,0,0.05); border-radius: 5px;">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: {{ total_allocation }}%;" aria-valuenow="{{ total_allocation }}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <div class="text-end mb-3"><small class="text-muted fw-bold">Total Allocated: {{ total_allocation }}% / 100%</small></div>
+
+                <div class="row">
+                    {% for b in beneficiaries %}
+                    <div class="col-md-4 mb-3">
+                        <div class="p-3" style="background: rgba(255,255,255,0.4); border-radius: 15px; border: 1px solid rgba(255,255,255,0.6);">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h6 class="fw-bold mb-0">{{ b.name }}</h6>
+                                <span class="badge bg-success rounded-pill">{{ b.allocation_percentage }}%</span>
+                            </div>
+                            <small class="text-muted d-block mb-2">{{ b.relationship }}</small>
+                            {% if b.notes %}
+                            <hr style="border-color: rgba(0,0,0,0.05);">
+                            <p class="mb-0 text-muted" style="font-size: 0.85rem;"><i class="bi bi-info-circle"></i> {{ b.notes }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12 text-center py-4">
+                        <p class="text-muted">No beneficiaries defined yet.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modals -->
+
+<!-- Configure DMS Modal -->
+<div class="modal fade" id="configureDmsModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content" style="background:#e0e5ec; border-radius: 20px; border:none; box-shadow: 9px 9px 16px rgb(163,177,198,0.6), -9px -9px 16px rgba(255,255,255, 0.5);">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold">Configure Dead Man's Switch</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{% url 'legacy_dashboard' %}">
+                {% csrf_token %}
+                <input type="hidden" name="update_dms" value="1">
+                <div class="modal-body">
+                    <div class="form-check form-switch mb-4 fs-5">
+                        <input class="form-check-input" type="checkbox" name="is_enabled" id="dmsEnable" {% if dms.is_enabled %}checked{% endif %}>
+                        <label class="form-check-label fw-bold" for="dmsEnable">Enable Switch</label>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted fw-bold">Check-in Frequency (Days)</label>
+                        <input type="number" name="frequency" class="neu-input" value="{{ dms.check_in_frequency_days }}" required min="1" max="365">
+                        <small class="text-muted d-block mt-1">How often must you log in or check-in to prove you are active?</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted fw-bold">Grace Period (Days)</label>
+                        <input type="number" name="grace" class="neu-input" value="{{ dms.grace_period_days }}" required min="1" max="90">
+                        <small class="text-muted d-block mt-1">Time after missed check-in before releasing Legacy Data to Executors.</small>
+                    </div>
+                    
+                    <div class="alert alert-warning mt-4 rounded-3 border-0 d-flex align-items-center" style="background: rgba(237, 137, 54, 0.15); color: #c05621;">
+                        <i class="bi bi-exclamation-triangle-fill fs-3 me-3"></i>
+                        <div>
+                            <strong>Warning:</strong> If triggered, an encrypted payload containing your Vault access instructions will be emailed to your Legacy Executors automatically.
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="neu-btn" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="neu-btn neu-btn-danger">Save Configuration</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add Contact Modal -->
+<div class="modal fade" id="addContactModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content" style="background:#e0e5ec; border-radius: 20px; border:none; box-shadow: 9px 9px 16px rgb(163,177,198,0.6), -9px -9px 16px rgba(255,255,255, 0.5);">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold">Add Trusted Contact</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{% url 'legacy_dashboard' %}">
+                {% csrf_token %}
+                <input type="hidden" name="add_contact" value="1">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label text-muted fw-bold">Full Name</label>
+                        <input type="text" name="name" class="neu-input" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted fw-bold">Email Address</label>
+                        <input type="email" name="email" class="neu-input" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted fw-bold">Phone Number</label>
+                        <input type="text" name="phone" class="neu-input">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted fw-bold">Relationship (e.g. Spouse, Attorney)</label>
+                        <input type="text" name="relationship" class="neu-input" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted fw-bold">Access Role</label>
+                        <select name="role" class="neu-input" required>
+                            <option value="VIEW">View Only (No automated data release)</option>
+                            <option value="EMERGENCY">Emergency Access (Health/Medical info only)</option>
+                            <option value="LEGACY">Legacy Executor (Full Vault access upon switch trigger)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="neu-btn" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="neu-btn neu-btn-primary">Add Contact</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add Beneficiary Modal -->
+<div class="modal fade" id="addBeneficiaryModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content" style="background:#e0e5ec; border-radius: 20px; border:none; box-shadow: 9px 9px 16px rgb(163,177,198,0.6), -9px -9px 16px rgba(255,255,255, 0.5);">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold">Add Beneficiary</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{% url 'legacy_dashboard' %}">
+                {% csrf_token %}
+                <input type="hidden" name="add_beneficiary" value="1">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label text-muted fw-bold">Full Name</label>
+                        <input type="text" name="name" class="neu-input" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted fw-bold">Relationship (e.g. Son, Daughter)</label>
+                        <input type="text" name="relationship" class="neu-input" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted fw-bold">Estate Allocation %</label>
+                        <input type="number" step="0.01" name="allocation_percentage" class="neu-input" required min="0.01" max="{{ 100|add:'-'|add:total_allocation }}">
+                        <small class="text-muted d-block mt-1">Remaining available: {{ 100|add:'-'|add:total_allocation }}%</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted fw-bold">Specific Notes/Instructions (Optional)</label>
+                        <textarea name="notes" class="neu-input" rows="3" placeholder="e.g. Receives the downtown condo."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="neu-btn" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="neu-btn neu-btn-primary">Add Beneficiary</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -9,7 +9,7 @@ def security_center(request):
     # Only superusers can access this view since it is a system-wide platform capability
     if not request.user.is_superuser:
         messages.error(request, "Access denied. Admin privileges required.")
-        return redirect('financial_hub')
+        return redirect('wealth_os_hub')
         
     backups = DatabaseBackup.objects.all()[:10]
     logs = SecurityLog.objects.all()[:20]
@@ -22,7 +22,7 @@ def security_center(request):
 @login_required
 def trigger_backup(request):
     if not request.user.is_superuser:
-        return redirect('financial_hub')
+        return redirect('wealth_os_hub')
         
     if request.method == 'POST':
         # Simulate backup trigger

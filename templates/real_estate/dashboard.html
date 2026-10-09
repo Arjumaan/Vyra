@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Vyra - Real Estate Yield Manager{% endblock %}
+{% block extra_css %}
+<style>
+.neu-card {
+    background: #e0e5ec;
+    border-radius: 20px;
+    box-shadow: 9px 9px 16px rgb(163,177,198,0.6), -9px -9px 16px rgba(255,255,255, 0.5);
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+.neu-btn {
+    background: #e0e5ec;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 5px 5px 10px rgb(163,177,198,0.6), -5px -5px 10px rgba(255,255,255, 0.5);
+    padding: 10px 20px;
+    color: #4a5568;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+.neu-btn:hover {
+    box-shadow: inset 5px 5px 10px rgb(163,177,198,0.6), inset -5px -5px 10px rgba(255,255,255, 0.5);
+    color: #3182ce;
+}
+.neu-btn-primary {
+    background: linear-gradient(135deg, #4fd1c5 0%, #319795 100%);
+    color: white;
+    box-shadow: 5px 5px 15px rgba(49, 151, 149, 0.4);
+}
+.neu-btn-primary:hover {
+    box-shadow: inset 5px 5px 10px rgba(0,0,0,0.1), inset -5px -5px 10px rgba(255,255,255,0.2);
+    color: white;
+}
+.neu-input {
+    background: #e0e5ec;
+    border: none;
+    border-radius: 10px;
+    box-shadow: inset 5px 5px 10px rgb(163,177,198,0.6), inset -5px -5px 10px rgba(255,255,255, 0.5);
+    padding: 12px;
+    width: 100%;
+}
+.neu-input:focus {
+    outline: none;
+    box-shadow: inset 7px 7px 14px rgb(163,177,198,0.7), inset -7px -7px 14px rgba(255,255,255, 0.6);
+}
+.stat-value {
+    font-size: 2rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, #2b6cb0, #4299e1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+</style>
+{% endblock %}
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-0">Real Estate Portfolio & Yield</h2>
+            <p class="text-muted">Manage your physical assets, tenants, and cash flow</p>
+        </div>
+        <button class="neu-btn neu-btn-primary" data-bs-toggle="modal" data-bs-target="#addPropertyModal">
+            <i class="bi bi-plus-lg"></i> Add Property
+        </button>
+    </div>
+
+    <!-- Portfolio Summary -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="neu-card text-center h-100">
+                <p class="text-muted fw-bold mb-2">Total Portfolio Value</p>
+                <div class="stat-value">₹{{ total_value|floatformat:2 }}</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="neu-card text-center h-100">
+                <p class="text-muted fw-bold mb-2">Total Equity</p>
+                <div class="stat-value text-success">₹{{ total_equity|floatformat:2 }}</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="neu-card text-center h-100">
+                <p class="text-muted fw-bold mb-2">Monthly Cash Flow</p>
+                <div class="stat-value">₹{{ total_monthly_cash_flow|floatformat:2 }}</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="neu-card text-center h-100">
+                <p class="text-muted fw-bold mb-2">Overall Cap Rate</p>
+                <div class="stat-value text-info">{{ overall_cap_rate|floatformat:2 }}%</div>
+                <small class="text-muted">Cash on Cash: {{ overall_cash_on_cash|floatformat:2 }}%</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Property List -->
+    <div class="row">
+        {% for prop in properties %}
+        <div class="col-md-6 mb-4">
+            <div class="neu-card">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h4 class="fw-bold mb-1">{{ prop.name }}</h4>
+                        <span class="badge bg-secondary rounded-pill">{{ prop.get_property_type_display }}</span>
+                    </div>
+                    <form action="{% url 'delete_property' prop.pk %}" method="POST" onsubmit="return confirm('Delete this property?');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-outline-danger border-0" style="background: transparent;"><i class="bi bi-trash fs-5"></i></button>
+                    </form>
+                </div>
+                
+                <div class="row mt-3">
+                    <div class="col-6 mb-3">
+                        <small class="text-muted d-block">Current Value</small>
+                        <span class="fw-bold fs-5">₹{{ prop.current_value|floatformat:2 }}</span>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <small class="text-muted d-block">Mortgage Balance</small>
+                        <span class="fw-bold fs-5 text-danger">₹{{ prop.mortgage_balance|floatformat:2 }}</span>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <small class="text-muted d-block">Gross Yield</small>
+                        <span class="fw-bold fs-5 text-primary">{{ prop.gross_yield|floatformat:2 }}%</span>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <small class="text-muted d-block">Net Cash Flow</small>
+                        <span class="fw-bold fs-5 text-success">₹{{ prop.annual_cash_flow|floatformat:2 }} /yr</span>
+                    </div>
+                </div>
+                
+                <div class="mt-2 pt-3 border-top" style="border-color: rgba(0,0,0,0.05)!important;">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">NOI: ₹{{ prop.annual_net_operating_income|floatformat:2 }} /yr</small>
+                        <small class="fw-bold">Cap Rate: {{ prop.cap_rate|floatformat:2 }}%</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <div class="neu-card d-inline-block p-5">
+                <i class="bi bi-buildings text-muted" style="font-size: 3rem;"></i>
+                <h4 class="mt-3 text-muted">No Properties Found</h4>
+                <p class="text-muted mb-4">Start managing your real estate portfolio.</p>
+                <button class="neu-btn neu-btn-primary" data-bs-toggle="modal" data-bs-target="#addPropertyModal">
+                    Add Your First Property
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Add Property Modal -->
+<div class="modal fade" id="addPropertyModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="background:#e0e5ec; border-radius: 20px; border:none; box-shadow: 9px 9px 16px rgb(163,177,198,0.6), -9px -9px 16px rgba(255,255,255, 0.5);">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold">Add Real Estate Asset</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{% url 'real_estate_dashboard' %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label text-muted fw-bold">Property Name</label>
+                            <input type="text" name="name" class="neu-input" required placeholder="e.g. Downtown Condo">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted fw-bold">Property Type</label>
+                            <select name="property_type" class="neu-input" required>
+                                <option value="RESIDENTIAL">Residential</option>
+                                <option value="COMMERCIAL">Commercial</option>
+                                <option value="LAND">Land</option>
+                                <option value="VACATION">Vacation Home</option>
+                                <option value="OTHER">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-12 mt-4 mb-2"><h6 class="fw-bold">Valuation</h6></div>
+                        <div class="col-md-4">
+                            <label class="form-label text-muted fw-bold">Purchase Price (₹)</label>
+                            <input type="number" step="0.01" name="purchase_price" class="neu-input" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label text-muted fw-bold">Current Value (₹)</label>
+                            <input type="number" step="0.01" name="current_value" class="neu-input" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label text-muted fw-bold">Down Payment (₹)</label>
+                            <input type="number" step="0.01" name="down_payment" class="neu-input" required>
+                        </div>
+
+                        <div class="col-12 mt-4 mb-2"><h6 class="fw-bold">Monthly Yield (Cash Flow)</h6></div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted fw-bold">Gross Rental Income (₹/mo)</label>
+                            <input type="number" step="0.01" name="rental_income" class="neu-input" value="0">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted fw-bold">Operating Expenses (₹/mo)</label>
+                            <input type="number" step="0.01" name="operating_expenses" class="neu-input" value="0">
+                        </div>
+                        
+                        <div class="col-12 mt-4 mb-2"><h6 class="fw-bold">Mortgage / Debt</h6></div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted fw-bold">Mortgage Balance (₹)</label>
+                            <input type="number" step="0.01" name="mortgage_balance" class="neu-input" value="0">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted fw-bold">Monthly Payment (₹)</label>
+                            <input type="number" step="0.01" name="mortgage_payment" class="neu-input" value="0">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="neu-btn" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="neu-btn neu-btn-primary">Save Property</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
